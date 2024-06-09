@@ -1,0 +1,19 @@
+.sidebar-left {
+    width: 200px;
+    background-color: #FF5964;
+    position: fixed;
+    top: 85px;
+    left: 0;
+    bottom: 0;
+    overflow-y: auto;
+  }
+  
+  .sidebar-right {
+    width: 200px;
+    background-color: #FF5964;
+    position: fixed;
+    top: 85px;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+  }

@@ -26,15 +26,20 @@ const Navbar = () => {
                     <NavLink to="/friends" activeStyle>
                         Friends
                     </NavLink>
-                    <NavLink to="/sign-up" activeStyle>
-                        Sign Up
+                    <NavLink to="/profile" activeStyle>
+                        Profile
                     </NavLink>
                     {/* Second Nav */}
                     {/* <NavBtnLink to='/sign-in'>Sign In</NavBtnLink> */}
                 </NavMenu>
                 <NavBtn>
-                    <NavBtnLink to="/signin">
-                        Sign In
+                    <NavBtnLink to="/login">
+                        Log In
+                    </NavBtnLink>
+                </NavBtn>
+                <NavBtn>
+                    <NavBtnLink to="/register">
+                        Register
                     </NavBtnLink>
                 </NavBtn>
             </Nav>

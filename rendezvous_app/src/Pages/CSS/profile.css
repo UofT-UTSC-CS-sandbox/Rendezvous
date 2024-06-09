@@ -1,0 +1,23 @@
+.resized-image {
+    width: 256px; 
+    height: 256px; 
+  }
+
+.button {
+  border-radius: 4px;
+  background: #F2F17E;
+  padding: 10px 22px;
+  color: #C93B45;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  /* Second Nav */
+  margin-left: 24px;
+  &:hover {
+      transition: all 0.2s ease-in-out;
+      background: #ffe500;
+      color: #C93B45;
+  }
+}
