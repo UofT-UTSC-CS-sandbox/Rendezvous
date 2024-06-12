@@ -5,7 +5,7 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Copy the requirements file into the container
-COPY pyproject.toml poetry.lock /app/
+COPY backend_fastapi/pyproject.toml backend_fastapi/poetry.lock /app/
 
 # Install Poetry
 RUN pip install poetry
@@ -14,7 +14,7 @@ RUN pip install poetry
 RUN poetry install --no-dev
 
 # Copy the rest of the application code into the container
-COPY . /app
+COPY backend_fastapi /app
 
 # Expose port 8000 for the FastAPI application
 EXPOSE 8000

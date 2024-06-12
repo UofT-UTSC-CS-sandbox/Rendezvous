@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import React, { useState } from 'react';
-import axios from 'axios';
+import BackendApi from "./fastapi";
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -17,7 +17,7 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/register', formData);
+            const response = await BackendApi.post('/register', formData);
             console.log('Response:', response.data);
             setMsg(response.data.message);
         } catch (error) {
