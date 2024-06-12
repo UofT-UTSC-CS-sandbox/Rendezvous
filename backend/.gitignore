@@ -1,0 +1,5 @@
+.env
+/venv
+/templates
+/static
+__pycache__

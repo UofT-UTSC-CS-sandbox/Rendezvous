@@ -1,22 +1,22 @@
-import React from "react";
-import {
-    Nav,
-    NavLink,
-    Bars,
-    NavMenu,
-    NavBtn,
-    NavBtnLink,
-} from "./NavbarElements";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { Nav, NavLink, Bars, NavMenu, NavBtn, NavBtnLink } from "./NavbarElements";
+import { AuthContext } from '../../AuthContext';
+
 
 const Navbar = () => {
+    const { isAuthenticated, logout } = useContext(AuthContext);
+
+    const handleLogout = () => {
+        logout();
+    };
+
     return (
         <>
             <Nav>
                 <Bars />
                 <NavMenu>
-                <NavLink to="/home">
-                        Home
-                    </NavLink>
+                    <NavLink to="/home">Home</NavLink>
                     <NavLink to="/about" activeStyle>
                         About
                     </NavLink>
@@ -29,19 +29,21 @@ const Navbar = () => {
                     <NavLink to="/profile" activeStyle>
                         Profile
                     </NavLink>
-                    {/* Second Nav */}
-                    {/* <NavBtnLink to='/sign-in'>Sign In</NavBtnLink> */}
                 </NavMenu>
-                <NavBtn>
-                    <NavBtnLink to="/login">
-                        Log In
-                    </NavBtnLink>
-                </NavBtn>
-                <NavBtn>
-                    <NavBtnLink to="/register">
-                        Register
-                    </NavBtnLink>
-                </NavBtn>
+                {isAuthenticated ? (
+                    <NavBtn>
+                        <NavBtnLink onClick={handleLogout}>Logout</NavBtnLink>
+                    </NavBtn>
+                ) : (
+                    <>
+                        <NavBtn>
+                            <NavBtnLink to="/login">Log In</NavBtnLink>
+                        </NavBtn>
+                        <NavBtn>
+                            <NavBtnLink to="/register">Register</NavBtnLink>
+                        </NavBtn>
+                    </>
+                )}
             </Nav>
         </>
     );
