@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Nav, NavLink, Bars, NavMenu, NavBtn, NavBtnLink } from "./NavbarElements";
-import { AuthContext } from '../../AuthContext';
+import { useAuth } from '../../AuthContext';
 
 
 const Navbar = () => {
-    const { isAuthenticated, logout } = useContext(AuthContext);
+    const { isAuthenticated, logout } = useAuth();
 
     const handleLogout = () => {
         logout();

@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { getToken, saveToken, removeToken } from './/Pages//token';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import { getToken, saveToken, removeToken } from './Pages/token';
 
 const AuthContext = createContext();
 
@@ -30,4 +30,6 @@ const AuthProvider = ({ children }) => {
     );
 };
 
-export { AuthContext, AuthProvider };
+const useAuth = () => useContext(AuthContext);
+
+export { AuthProvider, useAuth };

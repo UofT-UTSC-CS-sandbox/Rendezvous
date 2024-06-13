@@ -2,12 +2,13 @@ import { Link } from "react-router-dom";
 import React, { useState } from 'react';
 import BackendApi from './fastapi'
 import { useNavigate } from 'react-router-dom';
-import { saveToken } from "./token";
+import { useAuth } from '../AuthContext'
 
 const Login = () => {
     const [formData, setFormData] = useState({ username: '', password: '' });
     const [msg, setMsg] = useState('');
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -16,8 +17,12 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await BackendApi.post('/login', formData);
-            saveToken(response.data.access_token)
+            const response = await BackendApi.post('/login', formData, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            });
+            login(response.data.access_token)
             setMsg('Login Successful!');
             navigate('/home');
         } catch (error) {

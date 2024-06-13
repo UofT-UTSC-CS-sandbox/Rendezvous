@@ -1,5 +1,4 @@
 //import logo from './logo.svg';
-import React from "react";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import {
@@ -14,9 +13,11 @@ import Friends from "./Pages/friends";
 import Login from "./Pages/login";
 import Register from "./Pages/register";
 import Profile from "./Pages/profile";
+import PrivateRoute from "./PrivateRoute";
+import { useAuth } from "./AuthContext";
 
-
-function App() {
+const App = () => {
+    const { isAuthenticated } = useAuth();
     return (
         <Router>
             <Navbar />
@@ -24,12 +25,19 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/about" element={<About />} />
-                <Route
-                    path="/events"
-                    element={<Events />}
-                />
-                <Route path="/friends" element={<Friends />} />
-                <Route path="/profile" element={<Profile />} />
+                { isAuthenticated ? (
+                    <>
+                        <Route path="/events" element={<Events />}/>
+                        <Route path="/friends" element={<Friends />} />
+                        <Route path="/profile" element={<Profile />} />
+                    </>
+                ) : (
+                    <Route element={<PrivateRoute/>}>
+                        <Route path="/events" element={<Events />}/>
+                        <Route path="/friends" element={<Friends />} />
+                        <Route path="/profile" element={<Profile />} />
+                    </Route>
+                )}
                 <Route
                     path="/login"
                     element={<Login />}
@@ -41,6 +49,6 @@ function App() {
             </Routes>
         </Router>
     );
-}
+};
 
 export default App;
