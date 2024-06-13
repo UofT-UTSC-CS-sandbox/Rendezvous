@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import Home from "./Pages";
 import About from "./Pages/about";
-import Events from "./Pages/events";
+import Events from "./Pages/EventsList";
 import Friends from "./Pages/friends";
 import Login from "./Pages/login";
 import Register from "./Pages/register";

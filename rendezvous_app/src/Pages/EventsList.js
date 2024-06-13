@@ -26,7 +26,7 @@ const events = [
 
 ];
 
-const EventsList = () => {
+const Events = () => {
     return (
         <div className="events-list">
             {events.map((event, index) => (
@@ -50,4 +50,4 @@ const EventsList = () => {
 
 
 
-export default EventsList;
+export default Events;
