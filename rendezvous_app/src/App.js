@@ -1,5 +1,4 @@
 //import logo from './logo.svg';
-import React from "react";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import {
@@ -11,27 +10,45 @@ import Home from "./Pages";
 import About from "./Pages/about";
 import Events from "./Pages/events";
 import Friends from "./Pages/friends";
-import SignUp from "./Pages/signup";
+import Login from "./Pages/login";
+import Register from "./Pages/register";
+import Profile from "./Pages/profile";
+import PrivateRoute from "./PrivateRoute";
+import { useAuth } from "./AuthContext";
 
-function App() {
+const App = () => {
+    const { isAuthenticated } = useAuth();
     return (
         <Router>
             <Navbar />
             <Routes>
+                <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/about" element={<About />} />
+                { isAuthenticated ? (
+                    <>
+                        <Route path="/events" element={<Events />}/>
+                        <Route path="/friends" element={<Friends />} />
+                        <Route path="/profile" element={<Profile />} />
+                    </>
+                ) : (
+                    <Route element={<PrivateRoute/>}>
+                        <Route path="/events" element={<Events />}/>
+                        <Route path="/friends" element={<Friends />} />
+                        <Route path="/profile" element={<Profile />} />
+                    </Route>
+                )}
                 <Route
-                    path="/events"
-                    element={<Events />}
+                    path="/login"
+                    element={<Login />}
                 />
-                <Route path="/friends" element={<Friends />} />
                 <Route
-                    path="/sign-up"
-                    element={<SignUp />}
+                    path="/register"
+                    element={<Register />}
                 />
             </Routes>
         </Router>
     );
-}
+};
 
 export default App;
