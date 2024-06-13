@@ -9,7 +9,9 @@ import {
 import Home from "./Pages";
 import About from "./Pages/about";
 import Events from "./Pages/EventsList";
+import EventSignup from "./Pages/EventSignup";
 import Friends from "./Pages/friends";
+import AddFriends from "./Pages/addfriend";
 import Login from "./Pages/login";
 import Register from "./Pages/register";
 import Profile from "./Pages/profile";
@@ -46,6 +48,8 @@ const App = () => {
                     path="/register"
                     element={<Register />}
                 />
+                <Route path="/event-signup/:id" element={<EventSignup />} />
+                <Route path="/addfriend" element={<AddFriends />} />
             </Routes>
         </Router>
     );
