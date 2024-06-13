@@ -11,6 +11,7 @@ import Home from "./Pages";
 import About from "./Pages/about";
 import Events from "./Pages/events";
 import Friends from "./Pages/friends";
+import AddFriend from "./Pages/addfriend";
 import SignUp from "./Pages/signup";
 
 function App() {
@@ -24,7 +25,10 @@ function App() {
                     path="/events"
                     element={<Events />}
                 />
-                <Route path="/friends" element={<Friends />} />
+                <Route path="/friends" 
+                       element={<Friends />} />
+                <Route path="/addfriend" 
+                       element={<AddFriend />} />
                 <Route
                     path="/sign-up"
                     element={<SignUp />}

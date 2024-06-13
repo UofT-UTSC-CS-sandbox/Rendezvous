@@ -1,70 +1,86 @@
-import React, { useState } from "react";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Friends = () => {
-    const [sidebarVisible, setSidebarVisible] = useState(true);
+    const navigate = useNavigate();
 
     const friendbtn = {
-        margin: "10px",
+        margin: "10px 0",
         padding: "10px",
-        backgroundColor: "#007BFF",
+        backgroundColor: "#fff",
+        color: "#000",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        width: "200px",
+        justifyContent: "flex-start",
+    };
+
+    const avatarStyle = {
+        width: "30px",
+        height: "30px",
+        borderRadius: "50%",
+        marginRight: "10px",
+    };
+
+    const addFriendBtn = {
+        margin: "20px 0",
+        padding: "10px",
+        backgroundColor: "green",
         color: "white",
         border: "none",
         borderRadius: "5px",
         cursor: "pointer",
     };
 
-    const toggleSidebarVisibility = () => {
-        setSidebarVisible(!sidebarVisible);
+    const handleAddFriendClick = () => {
+        navigate('/addfriend');
     };
 
     return (
         <div
             style={{
                 display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
                 height: "100vh",
+                flexDirection: "column",
             }}
         >
-            <div
-                style={{
-                    flex: 1,
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                }}
-            >
-                <h1>Friends List</h1> <br></br>
-                <div>
-                <button onClick={toggleSidebarVisibility} style={{ margin: "20px" }}>
-                    {sidebarVisible ? "Hide my Friend List" : "Show my Friend List"}
+            <h1>Friends List</h1>
+            <div style={{ marginBottom: "20px" }}>
+                <img
+                    src="https://www.w3schools.com/w3images/avatar2.png"
+                    alt="Avatar"
+                    style={{ width: "80px", height: "80px", borderRadius: "50%" }}
+                />
+                <p style={{ margin: "5px 0", fontSize: "16px", color: "black" }}>UserName</p>
+                <button style={addFriendBtn} onClick={handleAddFriendClick}>
+                    <h3>+ Add Friend</h3>
                 </button>
-                </div>
             </div>
-            {sidebarVisible && (
-                <div
-                    style={{
-                        width: "200px",
-                        backgroundColor: "#f0f0f0",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        padding: "10px",
-                    }}
-                >
-                <div style={{ marginBottom: "20px", textAlign: "center" }}>
-                    <img
-                        src="https://www.w3schools.com/w3images/avatar2.png" 
-                        alt="Avatar"
-                        style={{ width: "80px", height: "80px", borderRadius: "50%" }}
-                    />
-                    <p style={{ margin: "5px 0", fontSize: "16px", color:"#000" }}>User Name</p>
-                    </div>
-                    <button style={friendbtn}>Friend 1</button>
-                    <button style={friendbtn}>Friend 2</button>
-                    <button style={friendbtn}>Friend 3</button>
-                    <button style={friendbtn}>Friend 4</button>
-                    <button style={friendbtn}>Friend 5</button>
-                </div>
-            )}
+            <button style={friendbtn}>
+                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" style={avatarStyle} />
+                <h2>Friend 1</h2>
+            </button>
+            <button style={friendbtn}>
+                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" style={avatarStyle} />
+                <h2>Friend 2</h2>
+            </button>
+            <button style={friendbtn}>
+                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" style={avatarStyle} />
+                <h2>Friend 3</h2>
+            </button>
+            <button style={friendbtn}>
+                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" style={avatarStyle} />
+                <h2>Friend 4</h2>
+            </button>
+            <button style={friendbtn}>
+                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" style={avatarStyle} />
+                <h2>Friend 5</h2>
+            </button>
         </div>
     );
 };
