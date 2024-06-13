@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import BackendApi from './fastapi'
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../AuthContext';
+import { useAuth } from '../AuthContext'
 
 const Login = () => {
     const [formData, setFormData] = useState({ username: '', password: '' });
     const [msg, setMsg] = useState('');
-    const { login } = useContext(AuthContext);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,9 +17,13 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await BackendApi.post('/login', formData);
-            login(response.data.token);
-            setMsg(response.data.message);
+            const response = await BackendApi.post('/login', formData, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            });
+            login(response.data.access_token)
+            setMsg('Login Successful!');
             navigate('/home');
         } catch (error) {
             setMsg('Login failed');

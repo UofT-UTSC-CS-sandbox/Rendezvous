@@ -22,6 +22,8 @@ services:
     depends_on:
       - db
     restart: always
+    volumes:
+      - ./backend_fastapi/:/app
 
   rendezvous_app:
     build:
@@ -32,5 +34,10 @@ services:
       - rendezvous_app/.env
     ports:
       - "42070:3000"
+    volumes:
+      - ./rendezvous_app:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
 volumes:
   mysql_data:

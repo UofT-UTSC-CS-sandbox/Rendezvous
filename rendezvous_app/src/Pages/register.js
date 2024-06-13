@@ -19,7 +19,7 @@ const Register = () => {
         try {
             const response = await BackendApi.post('/register', formData);
             console.log('Response:', response.data);
-            setMsg(response.data.message);
+            setMsg('Registration Successful!');
         } catch (error) {
             console.error('Error:', error);
             setMsg('Registration failed');
