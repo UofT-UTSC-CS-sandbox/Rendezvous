@@ -1,14 +1,16 @@
-import React, {useState, useEffect, useRef} from "react"; 
-import "./CSS/profile.css"
+import React, { useState, useEffect, useRef } from "react";
+import "./CSS/profile.css";
 import pfp from "./images/stickmanpfp.png";
 import LeftSideBar from "../components/Sidebars/LeftSideBar";
 import RightSideBar from "../components/Sidebars/RightSideBar";
 
 const Profile = () => {
-    //bio handler
+    // Bio handler
     const [bio, setBio] = useState(() => {
         return localStorage.getItem("bio") ||
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam vel ornare augue, vel gravida leo. Nam nec mi sit amet dui venenatis pulvinar.";});
+            "I love to code and I am passionate about board games. I usually meet with my friends to visit different places around Canada. I play video games like League of Legends and Fallout.";
+    });
+
     const handleEditBio = () => {
         const newBio = prompt("Enter your new bio:");
         if (newBio !== null) {
@@ -16,21 +18,22 @@ const Profile = () => {
             localStorage.setItem("bio", newBio);
         }
     };
-    
-    //profile picture handler
+
+    // Profile picture handler
     const [profilePic, setProfilePic] = useState(() => {
         return localStorage.getItem("profilePic") || pfp;
     });
     const [fileInputDisabled, setFileInputDisabled] = useState(false);
     const imageFileInputRef = useRef(null);
+
     const handleProfilePicChange = () => {
         setFileInputDisabled(true);
         imageFileInputRef.current.click();
-    }
-    //for some reason the button won't work unless I do these 2 functions
+    };
+
     const handleFileInputChange = () => {
         const imageFile = imageFileInputRef.current.files[0];
-        if (imageFile){
+        if (imageFile) {
             const reader = new FileReader();
             reader.onload = () => {
                 const imageDataUrl = reader.result;
@@ -41,23 +44,11 @@ const Profile = () => {
             reader.readAsDataURL(imageFile);
         }
     };
-    // const handleProfilePicChange = () => {
-    //     const imageFile = imageFileInputRef.current.files[0];
-    //     if (imageFile){
-    //         const reader = new FileReader();
-    //         reader.onload = () => {
-    //             const imageDataUrl = reader.result;
-    //             setProfilePic(imageDataUrl);
-    //             localStorage.setItem("profilePic", imageDataUrl);
-    //         };
-    //         reader.readAsDataURL(imageFile);
-    //     }
-    // };
 
     useEffect(() => {
         localStorage.setItem("bio", bio);
     }, [bio]);
-    
+
     useEffect(() => {
         localStorage.setItem("profilePic", profilePic);
     }, [profilePic]);
@@ -68,38 +59,46 @@ const Profile = () => {
                 <LeftSideBar />
                 <RightSideBar />
             </div>
-            <div
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                }}
-            >
-                <h1>Your Profile</h1>
-                <img src={profilePic} alt="Profile pic" className="resized-image"/>
-                <input
-                    type="file"
-                    accept="image/*"
-                    ref={imageFileInputRef}
-                    style={{ display: "none" }}
-                    onChange={handleFileInputChange}
-                />
-            </div>
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    flexDirection: "column",
-                    marginLeft: "25%",
-                    marginRight: "25%",
-                }}
-            >
-                <div style={{ display: "flex", alignItems: "center" }}>
-                    <button className="button" onClick={handleProfilePicChange} disabled={fileInputDisabled}>Change Profile Pic</button>
-                    <button className="button" onClick={handleEditBio}>Edit Bio</button>
+            <div className="profile-container">
+                <div className="profile-sidebar">
+                    <div className="profile-card">
+                        <img src={profilePic} alt="Profile" className="profile-pic" />
+                        <h2>John Doe</h2>
+                        <p>Computer Science<br />3rd Year</p>
+                        <button className="edit-profile-btn" onClick={handleProfilePicChange} disabled={fileInputDisabled}>Edit Profile</button>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            ref={imageFileInputRef}
+                            style={{ display: "none" }}
+                            onChange={handleFileInputChange}
+                        />
+                    </div>
+                    <div className="social-links">
+                        <p><strong>Website</strong>: <a href="https://bootdey.com">https://bootdey.com</a></p>
+                        <p><strong>Github</strong>: bootdey</p>
+                        <p><strong>Twitter</strong>: @bootdey</p>
+                        <p><strong>Instagram</strong>: bootdey</p>
+                        <p><strong>Facebook</strong>: bootdey</p>
+                    </div>
                 </div>
-
-                <h2>{bio}</h2>
+                <div className="profile-main">
+                    <div className="profile-details">
+                        <h3>Full Name</h3>
+                        <p>Kenneth Valdez</p>
+                        <h3>About Me</h3>
+                        <p>{bio}</p>
+                        <button className="edit-bio-btn" onClick={handleEditBio}>Edit Bio</button>
+                    </div>
+                    <div className="events-section">
+                        <div className="event-card">
+                            <h4>Events Attended</h4>
+                        </div>
+                        <div className="event-card">
+                            <h4>Events Hosted</h4>
+                        </div>
+                    </div>
+                </div>
             </div>
         </>
     );

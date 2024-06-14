@@ -1,24 +1,66 @@
-.resized-image {
-    width: 256px; 
-    height: 256px; 
-    margin-bottom: 25px;
-  }
+.profile-container {
+  display: flex;
+  padding: 20px;
+  background-color: #e9edf5;
+  height: 100vh;
+}
 
-.button {
-  border-radius: 4px;
-  background: #F2F17E;
-  padding: 10px 22px;
-  color: #C93B45;
-  outline: none;
+.profile-sidebar {
+  flex: 1;
+  padding: 20px;
+}
+
+.profile-main {
+  flex: 2;
+  padding: 20px;
+}
+
+.profile-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.profile-pic {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+
+.edit-profile-btn, .edit-bio-btn {
+  background-color: #007bff;
+  color: white;
   border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  text-decoration: none;
-  /* Second Nav */
-  margin-left: 24px;
-  &:hover {
-      transition: all 0.2s ease-in-out;
-      background: #ffe500;
-      color: #C93B45;
-  }
+}
+
+.social-links p {
+  margin: 10px 0;
+}
+
+.profile-details {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.events-section {
+  display: flex;
+  gap: 20px;
+}
+
+.event-card {
+  flex: 1;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
