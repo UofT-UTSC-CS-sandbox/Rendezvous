@@ -55,10 +55,6 @@ const Profile = () => {
 
     return (
         <>
-            <div>
-                <LeftSideBar />
-                <RightSideBar />
-            </div>
             <div className="profile-container">
                 <div className="profile-sidebar">
                     <div className="profile-card">
@@ -75,11 +71,11 @@ const Profile = () => {
                         />
                     </div>
                     <div className="social-links">
-                        <p><strong>Website</strong>: <a href="https://bootdey.com">https://bootdey.com</a></p>
-                        <p><strong>Github</strong>: bootdey</p>
-                        <p><strong>Twitter</strong>: @bootdey</p>
-                        <p><strong>Instagram</strong>: bootdey</p>
-                        <p><strong>Facebook</strong>: bootdey</p>
+                        <p><strong>Website</strong>: <a href="https://test.com">https://test.com</a></p>
+                        <p><strong>Github</strong>: test</p>
+                        <p><strong>Twitter</strong>: @test</p>
+                        <p><strong>Instagram</strong>: test</p>
+                        <p><strong>Facebook</strong>: test</p>
                     </div>
                 </div>
                 <div className="profile-main">
