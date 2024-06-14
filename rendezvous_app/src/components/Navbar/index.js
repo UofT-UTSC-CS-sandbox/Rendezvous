@@ -1,22 +1,21 @@
 import React from "react";
-import {
-    Nav,
-    NavLink,
-    Bars,
-    NavMenu,
-    NavBtn,
-    NavBtnLink,
-} from "./NavbarElements";
+import { Nav, NavLink, Bars, NavMenu, NavBtn, NavBtnLink } from "./NavbarElements";
+import { useAuth } from '../../AuthContext';
+
 
 const Navbar = () => {
+    const { isAuthenticated, logout } = useAuth();
+
+    const handleLogout = () => {
+        logout();
+    };
+
     return (
         <>
             <Nav>
                 <Bars />
                 <NavMenu>
-                <NavLink to="/home">
-                        Home
-                    </NavLink>
+                    <NavLink to="/home">Home</NavLink>
                     <NavLink to="/about" activeStyle>
                         About
                     </NavLink>
@@ -26,17 +25,24 @@ const Navbar = () => {
                     <NavLink to="/friends" activeStyle>
                         Friends
                     </NavLink>
-                    <NavLink to="/sign-up" activeStyle>
-                        Sign Up
+                    <NavLink to="/profile" activeStyle>
+                        Profile
                     </NavLink>
-                    {/* Second Nav */}
-                    {/* <NavBtnLink to='/sign-in'>Sign In</NavBtnLink> */}
                 </NavMenu>
-                <NavBtn>
-                    <NavBtnLink to="/signin">
-                        Sign In
-                    </NavBtnLink>
-                </NavBtn>
+                {isAuthenticated ? (
+                    <NavBtn>
+                        <NavBtnLink onClick={handleLogout}>Logout</NavBtnLink>
+                    </NavBtn>
+                ) : (
+                    <>
+                        <NavBtn>
+                            <NavBtnLink to="/login">Log In</NavBtnLink>
+                        </NavBtn>
+                        <NavBtn>
+                            <NavBtnLink to="/register">Register</NavBtnLink>
+                        </NavBtn>
+                    </>
+                )}
             </Nav>
         </>
     );

@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    env_file:
+      - backend_fastapi/.env
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  fastapi:
+    build:
+      context: .  
+      dockerfile: backend.dockerfile
+    container_name: fastapi_app
+    env_file:
+      - backend_fastapi/.env
+    command: ["poetry", "run", "uvicorn", "backend_fastapi.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    ports:
+      - "42069:8000"
+    depends_on:
+      - db
+    restart: always
+    volumes:
+      - ./backend_fastapi/:/app
+
+  rendezvous_app:
+    build:
+      context: .
+      dockerfile: frontend.dockerfile
+    container_name: rendezvous_app
+    env_file:
+      - rendezvous_app/.env
+    ports:
+      - "42070:3000"
+    volumes:
+      - ./rendezvous_app:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+volumes:
+  mysql_data:
