@@ -2,7 +2,6 @@ import React from 'react'
 
 import { Helmet } from 'react-helmet'
 
-import NavGuest from '../components/nav-guest'
 import Hero9 from '../components/hero9'
 import Features1 from '../components/features1'
 import './home.css'
