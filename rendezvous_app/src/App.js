@@ -15,7 +15,8 @@ import Register from "./Pages/register";
 import Profile from "./Pages/profile";
 import PrivateRoute from "./PrivateRoute";
 import { useAuth } from "./AuthContext";
-
+import EventSignup from "./Pages/EventSignup";
+import EventCreate from "./Pages/EventCreate";
 const App = () => {
     const { isAuthenticated } = useAuth();
     return (
@@ -34,6 +35,7 @@ const App = () => {
                 ) : (
                     <Route element={<PrivateRoute/>}>
                         <Route path="/events" element={<Events />}/>
+                        
                         <Route path="/friends" element={<Friends />} />
                         <Route path="/profile" element={<Profile />} />
                     </Route>
@@ -45,6 +47,15 @@ const App = () => {
                 <Route
                     path="/register"
                     element={<Register />}
+                />
+                <Route 
+                    path="/EventSignup"
+                    element={<EventSignup/>}
+                />
+
+                <Route
+                    path = "/EventCreate"
+                    element = {<EventCreate/>}
                 />
             </Routes>
         </Router>

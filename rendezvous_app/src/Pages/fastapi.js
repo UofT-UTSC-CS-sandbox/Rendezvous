@@ -20,4 +20,4 @@ BackendApi.interceptors.request.use(
   }
 );
 
-export default BackendApi
+export default BackendApi;

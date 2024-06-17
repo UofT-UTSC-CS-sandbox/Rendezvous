@@ -1,9 +1,9 @@
 ### User Stories
 
-1. As a university student, I would like to register an account for this app so that I can meet other students
-2. As a university faculty member, I would like to register an account for this app so that I can create university events
-3. As a university student, I would like to be able to sign in to my account using my credentials so that I can continue meeting other  people
-4. As a university faculty member, I would like to be able to sign in to my account using my credentials so that I can continue to schedule events.
+1. As a university student, I would like to register an User for this app so that I can meet other students
+2. As a university faculty member, I would like to register an User for this app so that I can create university events
+3. As a university student, I would like to be able to sign in to my User using my credentials so that I can continue meeting other  people
+4. As a university faculty member, I would like to be able to sign in to my User using my credentials so that I can continue to schedule events.
 5. As an event hoster, I would like to be able to post events so that other people can attend
 6. As a university student, I would like to see other events so that I can consider which ones to attend
 7. As a university student, I would like to be able to add friends I meet on the app so that I can stay in contact with them

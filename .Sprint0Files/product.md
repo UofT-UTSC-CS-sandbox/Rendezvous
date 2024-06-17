@@ -16,7 +16,7 @@ Corresponding personas are visible in the persona.pdf document.
 
 #### Q3: Why would your users choose your product? What are they using today to solve their problem/need?
 
-Usually, university students rely on flyers and announcements in emails to learn about upcoming events. This can result in an underrepresentation of the number of people attending the event as there isn't a centralized system that disperses information. Most organizations that host events have social media pages on Instagram and students are required to have a social media account in order to access these pages. Moreover, if a user wanted to invite all their friends in one go, they would have to send the post individually or create huge groups. Our web application lets users send event information to their entire friend list without having to waste valuable time. Additionally, it also lets users host events with others willing to collaborate.
+Usually, university students rely on flyers and announcements in emails to learn about upcoming events. This can result in an underrepresentation of the number of people attending the event as there isn't a centralized system that disperses information. Most organizations that host events have social media pages on Instagram and students are required to have a social media User in order to access these pages. Moreover, if a user wanted to invite all their friends in one go, they would have to send the post individually or create huge groups. Our web application lets users send event information to their entire friend list without having to waste valuable time. Additionally, it also lets users host events with others willing to collaborate.
 
 
 #### Q4: What does "DONE" means to your Team 
