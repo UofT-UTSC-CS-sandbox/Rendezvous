@@ -1,20 +1,22 @@
 //import logo from './logo.svg';
-import "./App.css";
+import "./style.css";
 import Navbar from "./components/Navbar";
 import {
     BrowserRouter as Router,
     Routes,
     Route,
 } from "react-router-dom";
-import Home from "./Pages";
+import Home from "./Pages/home";
 import About from "./Pages/about";
 import Events from "./Pages/EventsList";
-import EventSignup from "./Pages/EventSignup";
 import Friends from "./Pages/friends";
 import AddFriends from "./Pages/addfriend";
 import Login from "./Pages/login";
 import Register from "./Pages/register";
 import Profile from "./Pages/profile";
+
+
+import EventSignup from "./Pages/EventSignup";
 import PrivateRoute from "./PrivateRoute";
 import { useAuth } from "./AuthContext";
 
@@ -27,15 +29,16 @@ const App = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/about" element={<About />} />
+                
                 { isAuthenticated ? (
                     <>
-                        <Route path="/events" element={<Events />}/>
+                        <Route path="/EventsList" element={<Events />}/>
                         <Route path="/friends" element={<Friends />} />
                         <Route path="/profile" element={<Profile />} />
                     </>
                 ) : (
                     <Route element={<PrivateRoute/>}>
-                        <Route path="/events" element={<Events />}/>
+                        <Route path="/EventsList" element={<Events />}/>
                         <Route path="/friends" element={<Friends />} />
                         <Route path="/profile" element={<Profile />} />
                     </Route>
