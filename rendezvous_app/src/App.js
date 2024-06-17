@@ -30,7 +30,6 @@ const App = () => {
                 <Route path="/home" element={<Home />} />
                 <Route path="/about" element={<About />} />
                 
-                <Route path="/profile" element={<Profile />} />
                 { isAuthenticated ? (
                     <>
                         <Route path="/EventsList" element={<Events />}/>
