@@ -1,93 +1,63 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Helmet } from 'react-helmet'
-import pfp from "./images/stickmanpfp.png";
+import BackendApi from "./fastapi";
 import './profile.css'
+import pfpplaceholder from './images/stickmanpfp.png';
 
-const Profile = (props) => {
-    // Bio handler
-    const [bio, setBio] = useState(() => {
-      return localStorage.getItem("bio") ||
-          "I love to code a visit different places around Canada. I play video games like League of Legends and Fallout.";
+const Profile = () => {
+  const [profileData, setProfileData] = useState({
+    username: '',
+    title: '',
+    bio: '',
+    github: '',
+    twitter: '',
+    instagram: '',
+    pfp: null,
   });
+  const [showProfileModal, setShowProfileModal] = useState(false);
+ 
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
 
-  const [fullName, setFullName] = useState("Kenneth");
-
-  const handleSaveBioChanges = () => {
-      localStorage.setItem("fullName", fullName);
-      localStorage.setItem("bio", bio);
-      setShowBioModal(false);
+  const fetchProfileData = async () => {
+    try {
+      const response = await BackendApi.get("/profile");
+      const userData = response.data;
+      setProfileData({
+        username: userData.username,
+        title: userData.title || 'No Title Yet',
+        bio: userData.bio || 'No Bio Yet',
+        github: userData.github || 'No Github',
+        twitter: userData.twitter || 'No Twitter',
+        instagram: userData.instagram || 'No Instagram',
+        pfp: userData.pfp || pfpplaceholder, 
+      });
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+    }
   };
 
-  // Profile picture handler
-  const [profilePic, setProfilePic] = useState(() => {
-      return localStorage.getItem("profilePic") || pfp;
-  });
-
-  // Profile info handler
-  const [role, setRole] = useState("Computer Science 3rd Year");
-  const [website, setWebsite] = useState("https://test.com");
-  const [github, setGithub] = useState("test");
-  const [twitter, setTwitter] = useState("@test");
-  const [instagram, setInstagram] = useState("test");
-  const [facebook, setFacebook] = useState("test");
-
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const [showBioModal, setShowBioModal] = useState(false);
+  const handleSaveProfileChanges = async () => {
+    try {
+      await BackendApi.put("/profile", profileData);
+      setShowProfileModal(false);
+    } catch (error) {
+      console.error("Error saving profile changes:", error);
+    }
+  };
 
   const handleProfilePicChange = (e) => {
-      const imageFile = e.target.files[0];
-      if (imageFile) {
-          const reader = new FileReader();
-          reader.onload = () => {
-              const imageDataUrl = reader.result;
-              setProfilePic(imageDataUrl);
-              localStorage.setItem("profilePic", imageDataUrl);
-          };
-          reader.readAsDataURL(imageFile);
-      }
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileData({ ...profileData, pfp: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
-  const handleSaveProfileChanges = () => {
-      localStorage.setItem("profilePic", profilePic);
-      localStorage.setItem("role", role);
-      localStorage.setItem("website", website);
-      localStorage.setItem("github", github);
-      localStorage.setItem("twitter", twitter);
-      localStorage.setItem("instagram", instagram);
-      localStorage.setItem("facebook", facebook);
-      setShowProfileModal(false);
-  };
-
-  useEffect(() => {
-      const savedFullName = localStorage.getItem("fullName");
-      if (savedFullName) {
-          setFullName(savedFullName);
-      }
-      const savedRole = localStorage.getItem("role");
-      if (savedRole) {
-          setRole(savedRole);
-      }
-      const savedWebsite = localStorage.getItem("website");
-      if (savedWebsite) {
-          setWebsite(savedWebsite);
-      }
-      const savedGithub = localStorage.getItem("github");
-      if (savedGithub) {
-          setGithub(savedGithub);
-      }
-      const savedTwitter = localStorage.getItem("twitter");
-      if (savedTwitter) {
-          setTwitter(savedTwitter);
-      }
-      const savedInstagram = localStorage.getItem("instagram");
-      if (savedInstagram) {
-          setInstagram(savedInstagram);
-      }
-      const savedFacebook = localStorage.getItem("facebook");
-      if (savedFacebook) {
-          setFacebook(savedFacebook);
-      }
-  }, []);
   return (
     <div className="profile-container">
       <Helmet>
@@ -99,50 +69,37 @@ const Profile = (props) => {
           <div className="profile-card">
             <img
               alt="image"
-              src={profilePic}
+              src={profileData.pfp}
               className="profile-pic"
             />
             <div className="profile-username">
-              <span className="username">Cool Username</span>
-              <span className="course">{role}</span>
-              <span className="year">3rd year</span>
+              <span className="username">{profileData.username}</span>
+              <span className="title">{profileData.title}</span>
             </div>
             <button type="button" className="edit-profile-btn" onClick={() => setShowProfileModal(true)}>
               Edit Profile
             </button>
           </div>
           <div className="social-links">
-            <div className="profile-website">
-              <span className="website">Website</span>
-              <span className="wlink"><a href={website}>{website}</a></span>
-            </div>
             <div className="profile-github">
               <span className="github">Github</span>
-              <span className="glink">{github}</span>
+              <span className="glink">{profileData.github}</span>
             </div>
             <div className="profile-twitter">
               <span className="twitter">Twitter</span>
-              <span className="tlink">{twitter}</span>
+              <span className="tlink">{profileData.twitter}</span>
             </div>
             <div className="profile-instagram">
               <span className="instagram">Instagram</span>
-              <span className="ilink">{instagram}</span>
-            </div>
-            <div className="profile-facebook">
-              <span className="facebook">Facebook</span>
-              <span className="flink">{facebook}</span>
+              <span className="ilink">{profileData.instagram}</span>
             </div>
           </div>
         </div>
         <div className="profile-right-container">
           <div className="profile-namebio">
-            <div className="profile-name">
-              <span className="name">Name</span>
-              <span className="namelink">{fullName}</span>
-            </div>
             <div className="profile-bio">
               <span className="bio">Bio</span>
-              <span className="biolink">{bio}</span>
+              <span className="biolink">{profileData.bio}</span>
             </div>
           </div>
           <div className="profile-all-events-container">
@@ -171,29 +128,20 @@ const Profile = (props) => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="role">Role</label>
+                            <label htmlFor="title">Title</label>
                             <input
                                 type="text"
-                                id="role"
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
+                                id="title"
+                                value={profileData.title}
+                                onChange={(e) => setProfileData({ ...profileData, title: e.target.value })}
                             />
                         </div>
                         <div className="form-group">
                             <label htmlFor="about-me">About Me</label>
                             <textarea
                                 id="about-me"
-                                value={bio}
-                                onChange={(e) => setBio(e.target.value)}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="website">Website</label>
-                            <input
-                                type="text"
-                                id="website"
-                                value={website}
-                                onChange={(e) => setWebsite(e.target.value)}
+                                value={profileData.bio}
+                                onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
                             />
                         </div>
                         <div className="form-group">
@@ -201,8 +149,8 @@ const Profile = (props) => {
                             <input
                                 type="text"
                                 id="github"
-                                value={github}
-                                onChange={(e) => setGithub(e.target.value)}
+                                value={profileData.github}
+                                onChange={(e) => setProfileData({ ...profileData, github: e.target.value })}
                             />
                         </div>
                         <div className="form-group">
@@ -210,8 +158,8 @@ const Profile = (props) => {
                             <input
                                 type="text"
                                 id="twitter"
-                                value={twitter}
-                                onChange={(e) => setTwitter(e.target.value)}
+                                value={profileData.twitter}
+                                onChange={(e) => setProfileData({ ...profileData, twitter: e.target.value })}
                             />
                         </div>
                         <div className="form-group">
@@ -219,17 +167,8 @@ const Profile = (props) => {
                             <input
                                 type="text"
                                 id="instagram"
-                                value={instagram}
-                                onChange={(e) => setInstagram(e.target.value)}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="facebook">Facebook</label>
-                            <input
-                                type="text"
-                                id="facebook"
-                                value={facebook}
-                                onChange={(e) => setFacebook(e.target.value)}
+                                value={profileData.instagram}
+                                onChange={(e) => setProfileData({ ...profileData, instagram: e.target.value })}
                             />
                         </div>
                         <button className="save-changes-btn" onClick={handleSaveProfileChanges}>Save Changes</button>

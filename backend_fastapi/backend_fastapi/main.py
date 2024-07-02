@@ -1,12 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, select
+from sqlalchemy import create_engine, Column, Integer, String, LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
-from databases import Database
 from pydantic import BaseModel
-from typing import Annotated
+from typing import Annotated, Optional, Union
 import jwt
 from jwt.exceptions import InvalidTokenError
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -14,7 +13,6 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 import os
 from dotenv import load_dotenv
-
 
 load_dotenv()
 
@@ -32,6 +30,12 @@ class Account(Base):
     username = Column(String(100), unique=True, nullable=False)
     password = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
+    title = Column(String(100), unique=False, nullable=True)
+    bio = Column(String(500), unique=False, nullable=True)
+    pfp = Column(LargeBinary, unique=False, nullable=True)
+    github = Column(String(100), unique=True, nullable=True)
+    twitter = Column(String(100), unique=True, nullable=True)
+    instagram = Column(String(100), unique=True, nullable=True)
 engine = create_engine(DATABASE_URL, echo=True)
 # engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -116,6 +120,14 @@ class UserOut(BaseModel):
     username: str
     email: str
 
+class UserUpdate(BaseModel):
+    title: Optional[str]
+    bio: Optional[str]
+    github: Optional[str]
+    twitter: Optional[str]
+    instagram: Optional[str]
+    pfp: Optional[Union[UploadFile, bytes]]
+
 @app.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     account = authenticate_user(db, form_data.username, form_data.password)
@@ -138,6 +150,22 @@ def register(user: UserIn, db: Session = Depends(get_db)):
         db.add(new_user)
         db.commit()
         return JSONResponse(content={"message": "You have successfully registered!"})
+
+@app.get("/profile")
+def get_profile(current_user: Account = Depends(get_current_user)):
+    return current_user
+
+@app.put("/profile")
+def update_profile(profile_data: UserUpdate, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    current_user.title = profile_data.title
+    current_user.bio = profile_data.bio
+    current_user.github = profile_data.github
+    current_user.twitter = profile_data.twitter
+    current_user.instagram = profile_data.instagram
+    if profile_data.pfp:
+        current_user.pfp = profile_data.pfp
+    db.commit()
+    return current_user
     
 @app.get("/events")
 def get_events(
