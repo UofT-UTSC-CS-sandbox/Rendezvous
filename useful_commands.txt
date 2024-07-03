@@ -1,0 +1,4 @@
+docker compose exec -i db mysql -u andyma937 -p
+docker compose up --build
+docker compose down
+npm start

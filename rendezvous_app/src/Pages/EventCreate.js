@@ -1,15 +1,26 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+export const handleSubmit = async (event, eventID, userID) => {
+  event.preventDefault();
+  try {
+    const response = await axios.post('http://localhost:42070/EventSignup', {
+      eventID,
+      userID,
+    });
+    console.log('Event signed up:', response.data);
+  } catch (error) {
+    console.error('Error signing up for event:', error);
+  }
+};
+
 const EventCreate = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
   const [time, setTime] = useState('');
-    
 
-
-  const handleSubmit = async (event) => {
+  const handleCreateSubmit = async (event) => {
     event.preventDefault();
     try {
       const response = await axios.post('http://localhost:42070/EventCreate', {
@@ -25,7 +36,7 @@ const EventCreate = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleCreateSubmit}>
       <div>
         <label>Event Title:</label>
         <input
