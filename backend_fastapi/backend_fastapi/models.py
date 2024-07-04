@@ -7,8 +7,8 @@ from .database import Base
 event_attendees = Table(
     'event_attendees',
     Base.metadata,
-    Column('event_id', Integer, ForeignKey('events.id'), primary_key=True),
-    Column('user_id', Integer, ForeignKey('users.id'), primary_key=True)
+    Column('event_id', ForeignKey('events.id'), primary_key=True),
+    Column('user_id', ForeignKey('users.id'), primary_key=True),
 )
 
 class User(Base):
@@ -18,7 +18,6 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     password = Column(String)
     attending = relationship("Event", secondary=event_attendees, back_populates="attendees")
-    events = relationship("Event", back_populates="host")
 
 class Event(Base):
     __tablename__ = 'events'

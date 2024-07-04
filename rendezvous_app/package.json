@@ -41,5 +41,6 @@
   },
   "devDependencies": {
     "source-map-loader": "^5.0.0"
-  }
+  },
+  "@babel/plugin-proposal-private-property-in-object": "^7.18.6"
 }

@@ -20,7 +20,7 @@ const Event = ({ title, description, image }) =>
 return (
     <div classname = "Whole-event">
         <div className = "event">
-        <h1 className = 'event-title'> <Link to={"/EventSignup"} className="event-link">{title}</Link></h1> 
+        <h1 className = 'event-title'> <Link to={EventSignup} className="event-link" alt={title}>{title}</Link></h1> 
             
             <img src={image} className="event-image" />
             
@@ -30,7 +30,7 @@ return (
             <br/>
         </div>
         <h1>Want to host an event? </h1>
-      <Link to="/EventCreate">
+      <Link to= {EventCreate}>
         <button>Host</button>
       </Link>
     </div>
