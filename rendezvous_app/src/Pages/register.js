@@ -2,6 +2,10 @@ import { Link } from "react-router-dom";
 import React, { useState } from 'react';
 import BackendApi from "./fastapi";
 
+import { Helmet } from 'react-helmet'
+import SignUp3 from '../components/sign-up3'
+import './register.css'
+
 const Register = () => {
     const [formData, setFormData] = useState({
         username: '',
@@ -27,6 +31,15 @@ const Register = () => {
     };
 
     return (
+        <div className="register-container">
+            <Helmet>
+                <title>Register - Rendezvous</title>
+                <meta property="og:title" content="Register - Rendezvous" />
+            </Helmet>
+            <SignUp3></SignUp3>
+        </div>
+
+/*
         <div>
             <h1>Register</h1>
             {msg && <p>{msg}</p>}
@@ -56,6 +69,7 @@ const Register = () => {
             </form>
             <p>Already have an account? <Link to="/login">Login</Link></p>
         </div>
+        */
     );
 };
 

@@ -4,6 +4,10 @@ import BackendApi from './fastapi'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext'
 
+import { Helmet } from 'react-helmet'
+import SignIn3 from '../components/sign-in3'
+import './login.css'
+
 const Login = () => {
     const [formData, setFormData] = useState({ username: '', password: '' });
     const [msg, setMsg] = useState('');
@@ -30,6 +34,15 @@ const Login = () => {
         }
     };
     return (
+        <div className="log-in-container">
+            <Helmet>
+                <title>Log-In - Rendezvous</title>
+                <meta property="og:title" content="Log-In - Rendezvous" />
+            </Helmet>
+            <SignIn3></SignIn3>
+        </div>
+    /*
+
         <div>
             <h1>Login</h1>
             {msg && <p>{msg}</p>}
@@ -52,6 +65,7 @@ const Login = () => {
             </form>
             <p>Don't have an account? <Link to="/register">Register</Link></p>
         </div>
+        */
     );
 };
 
