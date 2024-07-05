@@ -34,14 +34,13 @@ class Account(Base):
     email = Column(String(100), unique=True, nullable=False)
     title = Column(String(100), unique=False, nullable=True)
     bio = Column(String(500), unique=False, nullable=True)
-    pfp = Column(LargeBinary, unique=False, nullable=True)
+    pfp = Column(LargeBinary(length=65536), unique=False, nullable=True)
     github = Column(String(100), unique=False, nullable=True)
     twitter = Column(String(100), unique=False, nullable=True)
     instagram = Column(String(100), unique=False, nullable=True)
 engine = create_engine(DATABASE_URL, echo=True)
 # engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 Base.metadata.create_all(bind=engine)
 
 def get_db():
@@ -201,6 +200,19 @@ class UserUpdate(BaseModel):
 
 @app.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    """
+    Endpoint to authenticate user login and provide access token.
+
+    Args:
+        form_data (OAuth2PasswordRequestForm): Form data containing username and password.
+        db (Session): Database session dependency.
+
+    Returns:
+        JWT: Returns a JSON web token allowing the user to remain logged in for a period of time.
+
+    Raises:
+        HTTPException: Raises HTTP 400 error for incorrect username or password.
+    """
     account = authenticate_user(db, form_data.username, form_data.password)
     if account:
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -213,6 +225,19 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
 @app.post("/register")
 def register(user: UserIn, db: Session = Depends(get_db)):
+    """
+    Endpoint to register a new user.
+
+    Args:
+        user (UserIn): User input data including username, password, and email.
+        db (Session): Database session dependency.
+
+    Returns:
+        JSONResponse: Success message upon successful registration.
+
+    Raises:
+        HTTPException: Raises HTTP 400 error if username or email already exists.
+    """
     existing_user = db.query(Account).filter((Account.username == user.username) | (Account.email == user.email)).first()
     if existing_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username or email already exists!")
@@ -224,10 +249,30 @@ def register(user: UserIn, db: Session = Depends(get_db)):
 
 @app.get("/profile")
 def get_profile(current_user: Account = Depends(get_current_user)):
+    """
+    Endpoint to retrieve the profile of the current authenticated user.
+
+    Args:
+        current_user (Account): Current authenticated user obtained from token.
+
+    Returns:
+        Account: Current user's profile information.
+    """
     return current_user
 
 @app.put("/profile")
 def update_profile(profile_data: UserUpdate, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    Endpoint to update the profile of the current authenticated user.
+
+    Args:
+        profile_data (UserUpdate): User profile data to update.
+        current_user (Account): Current authenticated user obtained from token.
+        db (Session): Database session dependency.
+
+    Returns:
+        Account: Updated user profile information.
+    """
     current_user.title = profile_data.title
     current_user.bio = profile_data.bio
     current_user.github = profile_data.github
