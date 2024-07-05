@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, LargeBinary
+from sqlalchemy import create_engine, Column, Integer, String, Date,LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from pydantic import BaseModel
@@ -13,6 +13,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 import os
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -38,6 +39,21 @@ class Account(Base):
     github = Column(String(100), unique=False, nullable=True)
     twitter = Column(String(100), unique=False, nullable=True)
     instagram = Column(String(100), unique=False, nullable=True)
+
+# events table
+class Event(Base):
+    __tablename__ = 'events'
+    id = Column(Integer, primary_key=True)
+    title = Column(String(100), nullable =False)
+    description = Column(String(300),nullable= False)
+    date = Column(Date, nullable = False)
+    host_id = Column(Integer, nullable = False )
+
+
+
+
+
+
 engine = create_engine(DATABASE_URL, echo=True)
 # engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -190,6 +206,21 @@ class UserOut(BaseModel):
     username: str
     email: str
 
+
+class EventIn(BaseModel):
+    title: str
+    description: str
+    date: datetime
+   
+
+class EventOut(BaseModel):
+    id: int
+    title: str
+    description: str
+    date: datetime
+    host_id: int
+
+
 class UserUpdate(BaseModel):
     title: Optional[str]
     bio: Optional[str]
@@ -246,6 +277,17 @@ def register(user: UserIn, db: Session = Depends(get_db)):
         db.add(new_user)
         db.commit()
         return JSONResponse(content={"message": "You have successfully registered!"})
+
+
+@app.post("/HostEvent")
+def register_event(event: EventIn, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    new_event = Event( title= event.title,description= event.description, date= event.date )
+    new_event.host_id = current_user.id
+    db.add(new_event)
+    db.commit()
+    return JSONResponse(content={"message": "You have successfully created an event!"})
+
+
 
 @app.get("/profile")
 def get_profile(current_user: Account = Depends(get_current_user)):
