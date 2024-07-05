@@ -24,6 +24,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 24*60 # 1 day
 print(DATABASE_URL)
 
 Base = declarative_base()
+
+# accounts table
 class Account(Base):
     __tablename__ = 'accounts'
     id = Column(Integer, primary_key=True)
@@ -33,9 +35,9 @@ class Account(Base):
     title = Column(String(100), unique=False, nullable=True)
     bio = Column(String(500), unique=False, nullable=True)
     pfp = Column(LargeBinary, unique=False, nullable=True)
-    github = Column(String(100), unique=True, nullable=True)
-    twitter = Column(String(100), unique=True, nullable=True)
-    instagram = Column(String(100), unique=True, nullable=True)
+    github = Column(String(100), unique=False, nullable=True)
+    twitter = Column(String(100), unique=False, nullable=True)
+    instagram = Column(String(100), unique=False, nullable=True)
 engine = create_engine(DATABASE_URL, echo=True)
 # engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -43,6 +45,11 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base.metadata.create_all(bind=engine)
 
 def get_db():
+    """
+    Creates a database session for each database request.
+
+    Returns: A database session until it is no longer required by the request.
+    """
     db = SessionLocal()
     try:
         yield db
@@ -59,16 +66,58 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 app = FastAPI()
 
 def verify_password(plain_password, hashed_password):
+    """
+    Verify entered password with stored hashed password using passlib.
+
+    Args: 
+        plain_password (str): The password the user enters to log in.
+        hashed_password (str): The hashed password stored in database to compare with.
+    Returns:
+        bool: True or False depending on if user entered right password.
+    """
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
+    """
+    Hashes an entered password using passlib.
+
+    Args:
+        password (str): the password the user enters to register their account.
+    
+    Returns: 
+        str: A hash of the entered password, for extra security when storing said password.
+    """
     return pwd_context.hash(password)
 
 def get_user(db: Session, username: str)->Account:
+    """
+    Get the current user's data from the database using their unique username.
+
+    Args:
+        db (Session): The current database session open for the request.
+        username (str): The username of the account we want to access.
+    
+    Returns:
+        Account: The account with username username.
+    """
     account = db.query(Account).filter(Account.username == username).first()
     return account
 
 def get_current_user(db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(oauth2_scheme)]):
+    """
+    Get the account data of the current user with the website open, to display/edit profile information
+    Makes sure the user is logged in.
+
+    Args:
+        db (Session): The current database session open for the request.
+        token (str): The user token, to check if the user is logged in.
+    
+    Returns:
+        Account: The account of the current user opening their profile.
+    
+    Raises:
+        InvalidTokenError: If their login token is invalid. (IE have not logged in)
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -88,6 +137,18 @@ def get_current_user(db: Annotated[Session, Depends(get_db)], token: Annotated[s
     return account
 
 def authenticate_user(db: Session, username: str, password: str):
+    """
+    Checks if the user with username and password exists in the database.
+
+    Args:
+        db (Session): The database session open for the request using this function.
+        username (str): The entered username we are authenticating against the database.
+        password (str): The entered password we are authenticating against the database.
+    
+    Returns:
+        False: If username and/or password does not exist in the database.
+        Account: The account with username and password that we have successfully found in the database.
+    """
     user = get_user(db, username)
     if not user:
         return False
@@ -96,6 +157,16 @@ def authenticate_user(db: Session, username: str, password: str):
     return user
 
 def create_access_token(data: dict, expires_delta: timedelta):
+    """
+    Creates a JSON web token for any logged in user, and sets a timer on it.
+
+    Args:
+        data (dict): The entered username and password of the user who logged in.
+        expires_delta (timedelta): How long the token will be valid for.
+
+    Returns:
+        str: The encoded JSON web token.
+    """
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + expires_delta
     to_encode.update({"exp": expire})
