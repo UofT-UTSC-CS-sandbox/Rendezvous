@@ -13,7 +13,6 @@ Backlog (not started):
 <REN-23> As an event host, I would like to include a description of my event on the event posting so that any interested attendees would know about the details.
 
 Backlog (has been in sprint but not done):
-<REN-5> As an event hoster, I would like to be able to post events so that other people can attend
 <REN-6> As a university student, I would like to see other events so that I can consider which ones to attend
 <REN-7> As a university student, I would like to be able to add friends I meet on the app so that I can stay in contact with them
 <REN-8> As a university student, I would like to be able to see what events my friends are attending so that I can join them
