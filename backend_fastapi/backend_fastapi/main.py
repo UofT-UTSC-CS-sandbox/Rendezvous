@@ -1,9 +1,10 @@
+from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Date,LargeBinary
+from sqlalchemy import create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker, Session, relationship
 from pydantic import BaseModel
 from typing import Annotated, Optional, Union
 import jwt
@@ -39,6 +40,7 @@ class Account(Base):
     github = Column(String(100), unique=False, nullable=True)
     twitter = Column(String(100), unique=False, nullable=True)
     instagram = Column(String(100), unique=False, nullable=True)
+    hosted_events = relationship('Event', back_populates='host')
 
 # events table
 class Event(Base):
@@ -47,12 +49,8 @@ class Event(Base):
     title = Column(String(100), nullable =False)
     description = Column(String(300),nullable= False)
     date = Column(Date, nullable = False)
-    host_id = Column(Integer, nullable = False )
-
-
-
-
-
+    host_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
+    host = relationship('Account', back_populates='hosted_events')
 
 engine = create_engine(DATABASE_URL, echo=True)
 # engine = create_engine(DATABASE_URL)
@@ -278,16 +276,13 @@ def register(user: UserIn, db: Session = Depends(get_db)):
         db.commit()
         return JSONResponse(content={"message": "You have successfully registered!"})
 
-
-@app.post("/HostEvent")
+@app.post("/EventsPage")
 def register_event(event: EventIn, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
     new_event = Event( title= event.title,description= event.description, date= event.date )
     new_event.host_id = current_user.id
     db.add(new_event)
     db.commit()
     return JSONResponse(content={"message": "You have successfully created an event!"})
-
-
 
 @app.get("/profile")
 def get_profile(current_user: Account = Depends(get_current_user)):
@@ -324,7 +319,19 @@ def update_profile(profile_data: UserUpdate, current_user: Account = Depends(get
         current_user.pfp = profile_data.pfp
     db.commit()
     return current_user
-    
+
+@app.get("/accounts/{account_id}/hosted-events", response_model=List[EventOut])
+def get_hosted_events(account_id: int, db: Session = Depends(get_db)):
+    account = db.query(Account).filter(Account.id == account_id).first()
+    if account:
+        hosted_events = (db.query(Event)
+                         .filter(Event.host_id == account_id)
+                         .order_by(Event.date.desc())
+                         .limit(3)
+                         .all())
+        return hosted_events
+    return []
+
 @app.get("/events")
 def get_events(
     current_user: Annotated[Account, Depends(get_current_user)],

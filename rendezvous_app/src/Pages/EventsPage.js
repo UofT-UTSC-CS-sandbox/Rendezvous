@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import React, { useState } from 'react';
 import BackendApi from "./fastapi";
 
-const HostEvent = () => {
+const EventsPage = () => {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -17,20 +17,20 @@ const HostEvent = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await BackendApi.post('/HostEvent', formData);
+            const response = await BackendApi.post('/EventsPage', formData);
             console.log('Response:', response.data);
             setMsg('Event was created. You are the host!');
         } catch (error) {
             console.error('Error:', error);
-            setMsg('Registration failed');
+            setMsg('Failed to create event.');
         }
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#DDA0DD' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingTop: '20px', height: '100vh', backgroundColor: '#DDA0DD' }}>
             <div style={{ backgroundColor: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
                 <h1 style={{ marginBottom: '1rem' }}>Create an Event</h1>
-                {msg && <p style={{ color: msg === 'Registration failed' ? 'red' : 'green' }}>{msg}</p>}
+                {msg && <p style={{ color: msg === 'Failed to create event.' ? 'red' : 'green' }}>{msg}</p>}
                 <form onSubmit={handleSubmit} style={{ display: 'flex', width : '200%', maxWidth: '600px' , alignItems: 'center', gap: '1rem' }}>
                     <input
                         type="text"
@@ -66,4 +66,4 @@ const HostEvent = () => {
     );
 };
 
-export default HostEvent;
+export default EventsPage;

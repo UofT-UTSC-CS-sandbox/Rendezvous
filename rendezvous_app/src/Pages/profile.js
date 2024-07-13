@@ -3,9 +3,11 @@ import { Helmet } from 'react-helmet'
 import BackendApi from "./fastapi";
 import './profile.css'
 import pfpplaceholder from './images/stickmanpfp.png';
+import RecentHostedEvents from "../components/RecentEvents/recenthostedevents";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState({
+    id: -1,
     username: '',
     title: '',
     bio: '',
@@ -25,6 +27,7 @@ const Profile = () => {
       const response = await BackendApi.get("/profile");
       const userData = response.data;
       setProfileData({
+        id: userData.id,
         username: userData.username,
         title: userData.title || 'No Title Yet',
         bio: userData.bio || 'No Bio Yet',
@@ -109,6 +112,9 @@ const Profile = () => {
             <div className="profile-hosted">
               <span className="events-hosted">
                 <span>Events Hosted</span>
+                <div>
+                  <RecentHostedEvents accountId={profileData.id} />
+                </div>
               </span>
             </div>
           </div>
