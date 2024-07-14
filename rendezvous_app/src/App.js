@@ -38,15 +38,15 @@ const App = () => {
                             <Route path="/profile" element={<Profile />} />
                         </>
                     ) : (
-                        // <Route element={<PrivateRoute/>}>
-                        //     <Route path="/EventsPage" element={<EventsPage />}/>
-                        //     <Route path="/friends" element={<Friends />} />
-                        //     <Route path="/profile" element={<Profile />} />
-                        // </Route>
-                        <Route
-                            path="/login"
-                            element={<Login />}
-                        />
+                        <Route element={<PrivateRoute/>}>
+                            <Route path="/EventsPage" element={<EventsPage />}/>
+                            <Route path="/friends" element={<Friends />} />
+                            <Route path="/profile" element={<Profile />} />
+                        </Route>
+                        // <Route
+                        //     path="/login"
+                        //     element={<Login />}
+                        // />
                     )}
                     <Route
                         path="/login"

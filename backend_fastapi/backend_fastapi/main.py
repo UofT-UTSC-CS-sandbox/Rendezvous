@@ -332,12 +332,10 @@ def get_hosted_events(account_id: int, db: Session = Depends(get_db)):
         return hosted_events
     return []
 
-@app.get("/events")
-def get_events(
-    current_user: Annotated[Account, Depends(get_current_user)],
-):
-    return current_user
-
+@app.get("/events/", response_model=List[EventOut])
+def get_events(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    events = db.query(Event).offset(skip).limit(limit).all()
+    return events
 
 if __name__ == '__main__':
     import uvicorn
