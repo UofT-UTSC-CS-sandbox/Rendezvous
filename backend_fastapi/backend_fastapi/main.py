@@ -279,12 +279,12 @@ def update_profile(profile_data: UserUpdate, current_user: Account = Depends(get
         current_user.pfp = profile_data.pfp
     db.commit()
     return current_user
-    
-@app.get("/events")
-def get_events(
-    current_user: Annotated[Account, Depends(get_current_user)],
-):
-    return current_user
+
+
+@app.get("/events", response_model=list[EventOut])
+async def get_events(db: Session = Depends(get_db)):
+    events = db.query(Event).all()
+    return events
 
 
 if __name__ == '__main__':
