@@ -4,6 +4,7 @@ import BackendApi from "./fastapi";
 import './profile.css'
 import pfpplaceholder from './images/stickmanpfp.png';
 import RecentHostedEvents from "../components/RecentEvents/recenthostedevents";
+import EventPopup from "../components/RecentEvents/eventpopup";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -17,7 +18,16 @@ const Profile = () => {
     pfp: null,
   });
   const [showProfileModal, setShowProfileModal] = useState(false);
- 
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const handleOpenPopup = () => {
+    setIsPopupOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
+
   useEffect(() => {
     fetchProfileData();
   }, []);
@@ -112,11 +122,19 @@ const Profile = () => {
             <div className="profile-hosted">
               <span className="events-hosted">
                 <span>Events Hosted</span>
+                <button className="view-events-btn" onClick={handleOpenPopup}>
+                  All Hosted Events
+                </button>
                 <div>
                   <RecentHostedEvents accountId={profileData.id} />
                 </div>
               </span>
             </div>
+            <EventPopup
+            isOpen={isPopupOpen}
+            onClose={handleClosePopup}
+            accountId={profileData.id}
+          />
           </div>
         </div>
       </div>

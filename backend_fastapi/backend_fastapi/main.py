@@ -1,8 +1,8 @@
 from typing import List
-from fastapi import FastAPI, Depends, HTTPException, status, UploadFile
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, Query
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
 from pydantic import BaseModel
@@ -332,6 +332,51 @@ def get_hosted_events(account_id: int, db: Session = Depends(get_db)):
         return hosted_events
     return []
 
+@app.get("/accounts/{account_id}/all-hosted-events", response_model=dict)
+def get_hosted_events(
+    account_id: int,
+    page: int = Query(1, gt=0),
+    limit: int = Query(6, gt=0),
+    db: Session = Depends(get_db)
+):
+    # Check if account exists
+    account = db.query(Account).filter(Account.id == account_id).first()
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+
+    # Calculate offset for pagination
+    offset = (page - 1) * limit
+
+    # Query for events with pagination
+    events_query = (
+        db.query(Event)
+        .filter(Event.host_id == account_id)
+        .order_by(Event.date.desc())
+        .offset(offset)
+        .limit(limit)
+    )
+    events = events_query.all()
+
+    # Count total events for pagination
+    total_events_query = (
+        db.query(func.count(Event.id))
+        .filter(Event.host_id == account_id)
+    )
+    total_count = total_events_query.scalar()
+    total_pages = (total_count + limit - 1) // limit
+
+    return {
+        "events": [
+            {
+                "id": event.id,
+                "title": event.title,
+                "description": event.description,
+                "date": event.date.isoformat()
+            }
+            for event in events
+        ],
+        "totalPages": total_pages
+    }
 @app.get("/events/", response_model=List[EventOut])
 def get_events(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     events = db.query(Event).offset(skip).limit(limit).all()
