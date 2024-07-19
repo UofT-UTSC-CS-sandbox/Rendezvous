@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import React, { useState } from 'react';
+
+import React, { useState,useEffect } from 'react';
 import BackendApi from "./fastapi";
 
 const HostEvent = () => {
@@ -9,6 +9,33 @@ const HostEvent = () => {
         date: ''
     });
     const [msg, setMsg] = useState('');
+
+    
+    const [events, setEvents] = useState([]);
+
+    useEffect(() => {
+        fetchEvents();
+    }, []);
+
+    const fetchEvents = async () => {
+        try {
+            const response = await BackendApi.get('/events');
+            setEvents(response.data);
+        } catch (error) {
+            console.error('Error fetching events:', error);
+        }
+    };
+
+
+
+
+
+
+
+
+
+
+
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,9 +88,39 @@ const HostEvent = () => {
                     </button>
                 </form>
                 
+
+                <div style={{ backgroundColor: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '800px' }}>
+                    <h2>All Events</h2>
+                    {events.length > 0 ? (
+                        <ul style={{ listStyle: 'none', padding: 0 }}>
+                            {events.map((event) => (
+                                <li key={event.id} style={{ margin: '1rem 0', padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
+                                    <h3>{event.title}</h3>
+                                    <p>{event.description}</p>
+                                    <p><strong>Date:</strong> {event.date}</p>
+                                    
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No events available</p>
+                    )}
+                </div>
             </div>
-        </div>
+
+
+
+
+
+
+
+
+
+
+            </div>
+        
     );
 };
 
 export default HostEvent;
+
