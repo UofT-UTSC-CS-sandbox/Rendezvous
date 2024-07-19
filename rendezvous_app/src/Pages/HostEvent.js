@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> e6218a9b118b992b07fe54c4c0aae695b130fa87
 import React, { useState,useEffect } from 'react';
 import BackendApi from "./fastapi";
 
@@ -92,11 +88,7 @@ const HostEvent = () => {
                 </form>
                 
 
-<<<<<<< HEAD
                 <div style={{ display: 'flex', backgroundColor: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '800px' }}>
-=======
-                <div style={{ backgroundColor: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '800px' }}>
->>>>>>> e6218a9b118b992b07fe54c4c0aae695b130fa87
                     <h2>All Events</h2>
                     {events.length > 0 ? (
                         <ul style={{ listStyle: 'none', padding: 0 }}>
