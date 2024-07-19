@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Date,LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from pydantic import BaseModel
-from typing import Annotated, Optional, Union
+from typing import Annotated, Optional, Union , List
 import jwt
 from jwt.exceptions import InvalidTokenError
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -14,6 +14,7 @@ from datetime import datetime, timedelta, timezone
 import os
 from dotenv import load_dotenv
 
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -189,14 +190,14 @@ def create_access_token(data: dict, expires_delta: timedelta):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:42070"],  # Adjust this to the origin of your frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 class UserIn(BaseModel):
     username: str
     password: str
@@ -254,6 +255,12 @@ def register(user: UserIn, db: Session = Depends(get_db)):
         return JSONResponse(content={"message": "You have successfully registered!"})
 
 
+@app.get("/events", response_model=list[EventOut])
+async def get_events(db: Session = Depends(get_db)):
+    events = db.query(Event).all()
+    return events
+
+
 @app.post("/HostEvent")
 def register_event(event: EventIn, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
     new_event = Event( title= event.title,description= event.description, date= event.date )
@@ -279,12 +286,16 @@ def update_profile(profile_data: UserUpdate, current_user: Account = Depends(get
         current_user.pfp = profile_data.pfp
     db.commit()
     return current_user
+<<<<<<< HEAD
 
 
 @app.get("/events", response_model=list[EventOut])
 async def get_events(db: Session = Depends(get_db)):
     events = db.query(Event).all()
     return events
+=======
+    
+>>>>>>> e6218a9b118b992b07fe54c4c0aae695b130fa87
 
 
 if __name__ == '__main__':
