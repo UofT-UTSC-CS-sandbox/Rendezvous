@@ -322,6 +322,16 @@ def update_profile(profile_data: UserUpdate, current_user: Account = Depends(get
 
 @app.get("/accounts/{account_id}/hosted-events", response_model=List[EventOut])
 def get_hosted_events(account_id: int, db: Session = Depends(get_db)):
+    """
+    Endpoint to get the 3 most recent events a user has hosted.
+
+    Args:
+        account_id (int): the unique id of the account we wish to get hosted events from.
+        db (Session): Database session dependency.
+    
+    Returns:
+        List[Event]: A list of the 3 most recent events a user has hosted.
+    """
     account = db.query(Account).filter(Account.id == account_id).first()
     if account:
         hosted_events = (db.query(Event)
@@ -339,15 +349,24 @@ def get_hosted_events(
     limit: int = Query(6, gt=0),
     db: Session = Depends(get_db)
 ):
-    # Check if account exists
+    """
+    Endpoint to get all events a user has hosted, using pagination.
+
+    Args:
+        account_id (int): the unique id of the account we wish to get hosted events from.
+        page (int): The page of events the user starts looking at.
+        limit: The total amount of events displayed per page.
+        db (Session): Database session dependency.
+    
+    Returns:
+        List[Event]: A list of every event a user has hosted, 6 at a time using pagination.
+    """
     account = db.query(Account).filter(Account.id == account_id).first()
     if not account:
         raise HTTPException(status_code=404, detail="Account not found")
 
-    # Calculate offset for pagination
     offset = (page - 1) * limit
 
-    # Query for events with pagination
     events_query = (
         db.query(Event)
         .filter(Event.host_id == account_id)
@@ -357,7 +376,6 @@ def get_hosted_events(
     )
     events = events_query.all()
 
-    # Count total events for pagination
     total_events_query = (
         db.query(func.count(Event.id))
         .filter(Event.host_id == account_id)
