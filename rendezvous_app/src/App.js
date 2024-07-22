@@ -34,13 +34,13 @@ const App = () => {
                 
                 { isAuthenticated ? (
                     <>
-                        <Route path="/EventsList" element={<Events />}/>
+                        <Route path="/HostEvent" element={<HostEvent />}/>
                         <Route path="/friends" element={<Friends />} />
                         <Route path="/profile" element={<Profile />} />
                     </>
                 ) : (
                     <Route element={<PrivateRoute/>}>
-                        <Route path="/EventsList" element={<Events />}/>
+                        <Route path="/HostEvent" element={<HostEvent />}/>
                         <Route path="/friends" element={<Friends />} />
                         <Route path="/profile" element={<Profile />} />
                     </Route>
