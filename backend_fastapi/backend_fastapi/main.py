@@ -122,7 +122,7 @@ class Event(Base):
     date = Column(Date, nullable = False)
     host_id = Column(Integer, nullable = False )
  
- engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL, echo=True)
 # engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
