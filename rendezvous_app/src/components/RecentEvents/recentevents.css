@@ -1,0 +1,41 @@
+.event-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px;
+}
+
+.event-card {
+    background-color: #FFFDD0; 
+    color: #000; 
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    max-width: 100%; 
+    width: 100%;
+}
+
+.event-title {
+    font-size: 1.5em;
+    margin: 0;
+    word-wrap: break-word; 
+}
+
+.event-date {
+    font-size: 1em;
+    position: absolute;
+    bottom: 0px; 
+    right: 20px;
+    max-width: calc(100% - 40px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.event-description {
+    margin-top: 10px;
+    font-size: 1.2em;
+    word-wrap: break-word;
+}

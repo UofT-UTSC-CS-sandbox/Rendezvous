@@ -9,6 +9,7 @@
   flex-direction: column;
   justify-content: flex-start;
 }
+
 .profile-container01 {
   gap: var(--dl-space-space-unit);
   width: 100%;
@@ -21,6 +22,7 @@
   justify-content: flex-start;
   background-color: var(--dl-color-theme-accent1);
 }
+
 .profile-left-container {
   gap: var(--dl-space-space-unit);
   flex: 0 0 auto;
@@ -32,11 +34,11 @@
   align-items: flex-start;
   flex-direction: column;
 }
+
 .profile-right-container {
   gap: var(--dl-space-space-unit);
   flex: 1;
   width: 65%;
-  height: 810px;
   display: flex;
   align-self: flex-start;
   max-height: var(--dl-size-size-maxwidth);
@@ -45,10 +47,10 @@
   flex-direction: column;
   justify-content: flex-start;
 }
+
 .profile-card {
   flex: 1;
   width: 100%;
-  height: 100%;
   display: flex;
   padding: var(--dl-space-space-twounits);
   align-self: flex-start;
@@ -58,6 +60,7 @@
   justify-content: center;
   background-color: var(--dl-color-theme-secondary1);
 }
+
 .profile-pic {
   width: 100%;
   height: 100%;
@@ -67,6 +70,7 @@
   border-radius: var(--dl-radius-radius-round);
   object-position: center;
 }
+
 .profile-username {
   flex: 1;
   width: 294px;
@@ -76,6 +80,7 @@
   flex-direction: column;
   justify-content: center;
 }
+
 .username {
   width: 100%;
   height: 100%;
@@ -85,6 +90,7 @@
   font-family: "Bricolage Grotesque";
   font-weight: 700;
 }
+
 .title {
   width: 100%;
   height: 100%;
@@ -92,6 +98,7 @@
   text-align: center;
   font-family: "Bricolage Grotesque";
 }
+
 .year {
   width: 100%;
   height: 100%;
@@ -99,12 +106,14 @@
   text-align: center;
   font-family: "Bricolage Grotesque";
 }
+
 .edit-profile-btn {
   fill: var(--dl-color-theme-secondary1);
   flex: 1;
   color: var(--dl-color-theme-secondary1);
   background-color: var(--dl-color-theme-primary1);
 }
+
 .social-links {
   flex: 1;
   width: 100%;
@@ -117,102 +126,11 @@
   justify-content: flex-start;
   background-color: var(--dl-color-theme-secondary1);
 }
-.profile-website {
-  flex: 1;
-  width: 100%;
-  height: auto;
-  display: flex;
-  padding: var(--dl-space-space-unit);
-  align-items: center;
-  justify-content: space-between;
-}
-.website {
-  width: 100%;
-  height: 100%;
-  font-size: 24px;
-  align-self: center;
-  text-align: left;
-  font-family: "Bricolage Grotesque";
-}
-.wlink {
-  width: 100%;
-  height: 100%;
-  font-size: 24px;
-  text-align: right;
-  font-family: "Bricolage Grotesque";
-}
-.profile-github {
-  flex: 1;
-  width: 100%;
-  height: auto;
-  display: flex;
-  padding: var(--dl-space-space-unit);
-  align-items: center;
-  justify-content: space-between;
-}
-.github {
-  width: 100%;
-  height: 100%;
-  font-size: 24px;
-  align-self: center;
-  text-align: left;
-  font-family: "Bricolage Grotesque";
-}
-.glink {
-  width: 100%;
-  height: 100%;
-  font-size: 24px;
-  text-align: right;
-  font-family: "Bricolage Grotesque";
-}
-.profile-twitter {
-  flex: 1;
-  width: 100%;
-  height: auto;
-  display: flex;
-  padding: var(--dl-space-space-unit);
-  align-items: center;
-  justify-content: space-between;
-}
-.twitter {
-  width: 100%;
-  height: 100%;
-  font-size: 24px;
-  align-self: center;
-  text-align: left;
-  font-family: "Bricolage Grotesque";
-}
-.tlink {
-  width: 100%;
-  height: 100%;
-  font-size: 24px;
-  text-align: right;
-  font-family: "Bricolage Grotesque";
-}
-.profile-instagram {
-  flex: 1;
-  width: 100%;
-  height: auto;
-  display: flex;
-  padding: var(--dl-space-space-unit);
-  align-items: center;
-  justify-content: space-between;
-}
-.instagram {
-  width: 100%;
-  height: 100%;
-  font-size: 24px;
-  align-self: center;
-  text-align: left;
-  font-family: "Bricolage Grotesque";
-}
-.ilink {
-  width: 100%;
-  height: 100%;
-  font-size: 24px;
-  text-align: right;
-  font-family: "Bricolage Grotesque";
-}
+
+.profile-website,
+.profile-github,
+.profile-twitter,
+.profile-instagram,
 .profile-facebook {
   flex: 1;
   width: 100%;
@@ -220,8 +138,13 @@
   display: flex;
   padding: var(--dl-space-space-unit);
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
 }
+
+.website,
+.github,
+.twitter,
+.instagram,
 .facebook {
   width: 100%;
   height: 100%;
@@ -230,6 +153,11 @@
   text-align: left;
   font-family: "Bricolage Grotesque";
 }
+
+.wlink,
+.glink,
+.tlink,
+.ilink,
 .flink {
   width: 100%;
   height: 100%;
@@ -237,6 +165,7 @@
   text-align: right;
   font-family: "Bricolage Grotesque";
 }
+
 .profile-namebio {
   gap: var(--dl-space-space-unit);
   flex: 1;
@@ -250,7 +179,8 @@
   justify-content: flex-start;
   background-color: var(--dl-color-theme-secondary1);
 }
-.profile-name{
+
+.profile-name {
   gap: var(--dl-space-space-halfunit);
   width: 100%;
   height: auto;
@@ -258,17 +188,20 @@
   align-items: flex-start;
   flex-direction: column;
 }
+
 .name {
   width: 100%;
   font-size: 24px;
   font-style: normal;
   font-weight: 700;
 }
+
 .namelink {
   width: 100%;
   height: auto;
   font-size: 18px;
 }
+
 .profile-bio {
   gap: var(--dl-space-space-halfunit);
   flex: 1;
@@ -277,29 +210,47 @@
   align-items: flex-start;
   flex-direction: column;
 }
+
 .bio {
   width: 100%;
   font-size: 24px;
   font-style: normal;
   font-weight: 700;
 }
+
 .biolink {
   width: 100%;
   height: 100%;
   font-size: 18px;
 }
+
 .profile-all-events-container {
   gap: var(--dl-space-space-unit);
   flex: 1;
   width: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
+
+.view-events-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-left: 72px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.view-events-btn:hover {
+  background-color: #0056b3;
+}
+
 .profile-attended {
   flex: 1;
   width: 100%;
-  height: 100%;
+  height: auto;
   display: flex;
   padding: var(--dl-space-space-unit);
   align-items: flex-start;
@@ -308,6 +259,7 @@
   justify-content: flex-start;
   background-color: var(--dl-color-theme-secondary1);
 }
+
 .events-attended {
   width: 100%;
   font-size: 24px;
@@ -315,17 +267,21 @@
   font-family: "Bricolage Grotesque";
   font-weight: 700;
 }
+
 .profile-hosted {
+  position: relative;
   flex: 1;
   width: 100%;
-  height: 100%;
+  height: auto; 
   display: flex;
   padding: var(--dl-space-space-unit);
   align-items: flex-start;
   border-radius: var(--dl-radius-radius-inputradius);
   flex-direction: column;
+  justify-content: flex-start;
   background-color: var(--dl-color-theme-secondary1);
 }
+
 .events-hosted {
   width: 100%;
   font-size: 24px;
@@ -333,6 +289,7 @@
   font-family: "Bricolage Grotesque";
   font-weight: 700;
 }
+
 @media(max-width: 767px) {
   .profile-container01 {
     flex-direction: column;

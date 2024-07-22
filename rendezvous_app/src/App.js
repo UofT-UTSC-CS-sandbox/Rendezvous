@@ -8,7 +8,6 @@ import {
 } from "react-router-dom";
 import Home from "./Pages/home";
 import About from "./Pages/about";
-import Events from "./Pages/EventsList";
 import Friends from "./Pages/friends";
 import AddFriends from "./Pages/addfriend";
 import FriendRequestsRecieved from "./Pages/friendrequestsrecieved";
@@ -18,15 +17,14 @@ import Register from "./Pages/register";
 import Profile from "./Pages/profile";
 import EventDetails from './Pages/event-details'
 
-import HostEvent from "./Pages/HostEvent";
-
 import EventSignup from "./Pages/EventSignup";
 import PrivateRoute from "./PrivateRoute";
-import { useAuth } from "./AuthContext";
+import { AuthProvider, useAuth } from "./AuthContext";
 
 const App = () => {
     const { isAuthenticated } = useAuth();
     return (
+    <AuthProvider>
         <Router>
             <Navbar />
             <Routes>
@@ -34,6 +32,7 @@ const App = () => {
                 <Route path="/home" element={<Home />} />
                 <Route path="/about" element={<About />} />
                 
+                {/* If user is logged in, they may access the webpages that require a login token. If not, do not let them access the webpage. */}
                 { isAuthenticated ? (
                     <>
                         <Route path="/HostEvent" element={<HostEvent />}/>
@@ -63,6 +62,7 @@ const App = () => {
                 <Route path="/event-details" element={<EventDetails />} />
             </Routes>
         </Router>
+    </AuthProvider>
     );
 };
 

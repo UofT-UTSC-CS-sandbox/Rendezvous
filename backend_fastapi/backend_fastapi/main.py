@@ -1,12 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException, status, UploadFile
+from typing import List
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, Query
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Column, String, Date, LargeBinary
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, relationship, mapped_column
+from sqlalchemy import create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func
+from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
-from databases import Database
 from pydantic import BaseModel
 from typing import Annotated, List, Optional, Union
 import jwt
@@ -69,6 +68,7 @@ class Account(Base):
     github = Column(String(100), unique=False, nullable=True)
     twitter = Column(String(100), unique=False, nullable=True)
     instagram = Column(String(100), unique=False, nullable=True)
+    hosted_events = relationship('Event', back_populates='host')
 
     # Friend m2m relationship.
     # Database updates should maintatin symmetry.
@@ -120,8 +120,9 @@ class Event(Base):
     title = Column(String(100), nullable =False)
     description = Column(String(300),nullable= False)
     date = Column(Date, nullable = False)
-    host_id = Column(Integer, nullable = False )
- 
+    host_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
+    host = relationship('Account', back_populates='hosted_events')
+
 engine = create_engine(DATABASE_URL, echo=True)
 # engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -478,8 +479,6 @@ def register_event(event: EventIn, current_user: Account = Depends(get_current_u
     db.commit()
     return JSONResponse(content={"message": "You have successfully created an event!"})
 
-
-
 @app.get("/profile")
 def get_profile(current_user: Account = Depends(get_current_user)):
     """
@@ -516,6 +515,85 @@ def update_profile(profile_data: UserUpdate, current_user: Account = Depends(get
     db.commit()
     return current_user
 
+@app.get("/accounts/{account_id}/hosted-events", response_model=List[EventOut])
+def get_hosted_events(account_id: int, db: Session = Depends(get_db)):
+    """
+    Endpoint to get the 3 most recent events a user has hosted.
+
+    Args:
+        account_id (int): the unique id of the account we wish to get hosted events from.
+        db (Session): Database session dependency.
+    
+    Returns:
+        List[Event]: A list of the 3 most recent events a user has hosted.
+    """
+    account = db.query(Account).filter(Account.id == account_id).first()
+    if account:
+        hosted_events = (db.query(Event)
+                         .filter(Event.host_id == account_id)
+                         .order_by(Event.date.desc())
+                         .limit(3)
+                         .all())
+        return hosted_events
+    return []
+
+@app.get("/accounts/{account_id}/all-hosted-events", response_model=dict)
+def get_hosted_events(
+    account_id: int,
+    page: int = Query(1, gt=0),
+    limit: int = Query(6, gt=0),
+    db: Session = Depends(get_db)
+):
+    """
+    Endpoint to get all events a user has hosted, using pagination.
+
+    Args:
+        account_id (int): the unique id of the account we wish to get hosted events from.
+        page (int): The page of events the user starts looking at.
+        limit: The total amount of events displayed per page.
+        db (Session): Database session dependency.
+    
+    Returns:
+        List[Event]: A list of every event a user has hosted, 6 at a time using pagination.
+    """
+    account = db.query(Account).filter(Account.id == account_id).first()
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+
+    offset = (page - 1) * limit
+
+    events_query = (
+        db.query(Event)
+        .filter(Event.host_id == account_id)
+        .order_by(Event.date.desc())
+        .offset(offset)
+        .limit(limit)
+    )
+    events = events_query.all()
+
+    total_events_query = (
+        db.query(func.count(Event.id))
+        .filter(Event.host_id == account_id)
+    )
+    total_count = total_events_query.scalar()
+    total_pages = (total_count + limit - 1) // limit
+
+    return {
+        "events": [
+            {
+                "id": event.id,
+                "title": event.title,
+                "description": event.description,
+                "date": event.date.isoformat()
+            }
+            for event in events
+        ],
+        "totalPages": total_pages
+    }
+@app.get("/events/", response_model=List[EventOut])
+def get_events(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    events = db.query(Event).offset(skip).limit(limit).all()
+    return events
 
 @app.get("/events", response_model=list[EventOut])
 async def get_events(db: Session = Depends(get_db)):
