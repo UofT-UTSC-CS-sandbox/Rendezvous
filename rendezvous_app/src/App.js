@@ -14,6 +14,7 @@ import AddFriends from "./Pages/addfriend";
 import Login from "./Pages/login";
 import Register from "./Pages/register";
 import Profile from "./Pages/profile";
+import EventDetails from './Pages/event-details'
 
 import HostEvent from "./Pages/HostEvent";
 
@@ -55,6 +56,7 @@ const App = () => {
                 <Route path="/event-signup/:id" element={<EventSignup />} />
                 <Route path="/HostEvent" element = {<HostEvent />}/>
                 <Route path="/addfriend" element={<AddFriends />} />
+                <Route path="/event-details" element={<EventDetails />} />
             </Routes>
         </Router>
     );
