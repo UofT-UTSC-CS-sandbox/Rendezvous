@@ -37,7 +37,7 @@ const Navbar = (props) => {
               {props.link2}
             </Link>
             <Link
-              to="/EventsPage"
+              to="/HostEvent"
               className="nav-guest-link3 thq-link thq-body-small"
             >
               {props.link3}

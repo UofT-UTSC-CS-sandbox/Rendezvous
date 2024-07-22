@@ -16,7 +16,7 @@ import Login from "./Pages/login";
 import Register from "./Pages/register";
 import Profile from "./Pages/profile";
 import EventDetails from './Pages/event-details'
-
+import HostEvent from "./Pages/HostEvent";
 import EventSignup from "./Pages/EventSignup";
 import PrivateRoute from "./PrivateRoute";
 import { AuthProvider, useAuth } from "./AuthContext";
