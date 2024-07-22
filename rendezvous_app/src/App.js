@@ -11,6 +11,8 @@ import About from "./Pages/about";
 import Events from "./Pages/EventsList";
 import Friends from "./Pages/friends";
 import AddFriends from "./Pages/addfriend";
+import FriendRequestsRecieved from "./Pages/friendrequestsrecieved";
+import FriendRequestsSent from "./Pages/friendrequestssent";
 import Login from "./Pages/login";
 import Register from "./Pages/register";
 import Profile from "./Pages/profile";
@@ -53,6 +55,8 @@ const App = () => {
                 />
                 <Route path="/event-signup/:id" element={<EventSignup />} />
                 <Route path="/addfriend" element={<AddFriends />} />
+                <Route path="/friendrequestsrecieved" element={<FriendRequestsRecieved />} />
+                <Route path="/friendrequestssent" element={<FriendRequestsSent />} />
             </Routes>
         </Router>
     );

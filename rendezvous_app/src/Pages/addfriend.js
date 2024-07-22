@@ -25,10 +25,8 @@ const AddFriend = () => {
     const handleSubmitUsername = async (usernameForm) => {
         usernameForm.preventDefault();
         try {
-            const response = await BackendApi.post('/addfriend', friendUserName);
+            const response = await BackendApi.post('/sendfriendrequest', friendUserName);
             setResultMessage('Friend added!');
-            setResultStatus('0')
-            console.log("we will rock you")
             console.log(resultStatus)
 
             /* Waits for 5 seconds, to let user read the success message.

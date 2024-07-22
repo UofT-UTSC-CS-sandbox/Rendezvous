@@ -29,6 +29,11 @@ print(DATABASE_URL)
 
 Base = declarative_base()
 
+""" Table for friends relationship.
+    The relationship should be maintained to be symetriv.
+    Ie, user1 is a friend of user2 iff user2 is a friend
+    of user1.
+"""
 Account_to_account = Table(
     "account_to_account",
     Base.metadata,
@@ -36,6 +41,9 @@ Account_to_account = Table(
     Column("right_friend_id", Integer, ForeignKey("accounts.id"), primary_key=True),
 )
 
+""" Table for friends request relationship.
+    The relationship should be maintained to be antisymetric.
+"""
 friend_request_table = Table(
     "friend_request_table",
     Base.metadata,
@@ -75,19 +83,19 @@ class Account(Base):
         back_populates="right_friends",
     )
 
-     right_friend_requests: Mapped[List["Account"]] = relationship(
+    friend_requests_recieved: Mapped[List["Account"]] = relationship(
         "Account",
         secondary=friend_request_table,
         primaryjoin= (id == friend_request_table.c.friend_id),
         secondaryjoin= (id == friend_request_table.c.right_friend_id),
-        back_populates="friend_requests",
+        back_populates="friend_requests_sent",
     )
-    friend_requests: Mapped[List["Account"]] = relationship(
+    friend_requests_sent: Mapped[List["Account"]] = relationship(
         "Account",
         secondary=friend_request_table,
         primaryjoin= (id == friend_request_table.c.right_friend_id),
         secondaryjoin= (id == friend_request_table.c.friend_id),
-        back_populates="right_friend_requests",
+        back_populates="friend_requests_recieved",
     )
 
     def __repr__(self) -> str:
@@ -243,27 +251,40 @@ def send_friend_request (friend_user: Account = Depends(get_user_from_usernameIn
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You cannot friend yourself.") 
     if friend_user in current_user.friends:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is already a friend.") 
-    if friend_user in current_user.friend_requests:
+    if friend_user in current_user.friend_requests_sent:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Friend request to user already sent.") 
     # friend has already sent a friend request to the current user
-    if friend_user in current_user.right_friend_requests:
-        friend_user.friend_requests.remove(current_user)
+    if friend_user in current_user.friend_requests_recieved:
+        friend_user.friend_requests_sent.remove(current_user)
         friend_user.friends.append(current_user)
         current_user.friends.append(friend_user)
         db.commit()
         return JSONResponse(content={"message": "Friend successfully added!"})
     # creates new friend request
-    current_user.friend_requests.append(friend_user)
+    current_user.friend_requests_sent.append(friend_user)
     db.commit()
     return JSONResponse(content={"message": "Friend request sent!"})
 
+""" Denies existing friend request to the current user from the friend_user.
+
+    Throws HTTPException if:
+        - friend does not exist
+        - authentication for current user fails """
+@app.post("/denyfriendrequest")
 def deny_friend_request (friend_user: Account = Depends(get_user_from_usernameIn),
                 current_user: Account = Depends(get_current_user),
                 db: Session = Depends(get_db)):
-    current_user.right_friend_requests.remove(friend_user)
+    current_user.friend_requests_recieved.remove(friend_user)
     db.commit()
     return JSONResponse(content={"message": "Friend request denied."})
 
+""" Removes friend with matching username from friends list for
+    the current user.
+
+    Throws HTTPException if:
+        - friend does not exist
+        - authentication for current user fails. """
+@app.post("/removefriend")
 def remove_friend (friend_user: Account = Depends(get_user_from_usernameIn),
                 current_user: Account = Depends(get_current_user),
                 db: Session = Depends(get_db)):
@@ -271,12 +292,30 @@ def remove_friend (friend_user: Account = Depends(get_user_from_usernameIn),
     friend_user.friends.remove(current_user)
     db.commit()
     return JSONResponse(content={"message": "Friend removed."})
+
+""" Denies existing friend request to the current user from the friend_user.
+
+    Throws HTTPException if:
+        - friend does not exist.
+        - authentication for current user fails. """
+@app.post("/cancelfriendrequest")
+def remove_friend (friend_user: Account = Depends(get_user_from_usernameIn),
+                current_user: Account = Depends(get_current_user),
+                db: Session = Depends(get_db)):
+    current_user.friend_requests_sent.remove(friend_user)
+    db.commit()
+    return JSONResponse(content={"message": "Friend Request removed."})
     
 
 """ Adds the (first) user with username=username as
     a friend of the current_user.
     
-    friend user should have sent friend request to current user."""
+    friend user should have sent friend request to current user.
+    Otherwise, this will simply sent a friend request to the friend_user.
+
+    Throws HTTPException if:
+        - friend does not exist.
+        - authentication for current user fails. """
 @app.post("/addfriend")
 def add_friend (friend_user: Account = Depends(get_user_from_usernameIn),
                 current_user: Account = Depends(get_current_user),
@@ -285,17 +324,24 @@ def add_friend (friend_user: Account = Depends(get_user_from_usernameIn),
 
 """ Returns a json array of the current user's friends.
 
-    Throws HTTPException if authentication fails.
-    """
+    Throws HTTPException if authentication fails. """
 @app.post("/friends", response_model=List[FriendCompressedProfile])
 def get_friends(current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
     return [friend_account.toFriendCompressedProfile() for friend_account in current_user.friends]
-        
-def get_friend_requests_sent(current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
-    return [friend_account.toFriendCompressedProfile() for friend_account in current_user.friend_requests]
 
+""" Returns a json array of the current user's sent friend requests.
+
+    Throws HTTPException if authentication fails. """
+@app.post("/friendrequestssent", response_model=List[FriendCompressedProfile])       
+def get_friend_requests_sent(current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    return [friend_account.toFriendCompressedProfile() for friend_account in current_user.friend_requests_sent]
+
+""" Returns a json array of the current user's recieved friend requests.
+
+    Throws HTTPException if authentication fails. """
+@app.post("/friendrequestsrecieved", response_model=List[FriendCompressedProfile])  
 def get_friend_requests_recieved(current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
-    return [friend_account.toFriendCompressedProfile() for friend_account in current_user.right_friend_requests]
+    return [friend_account.toFriendCompressedProfile() for friend_account in current_user.friend_requests_recieved]
 
 @app.get("/events")
 def get_events(current_user: Annotated[Account, Depends(get_current_user)]):

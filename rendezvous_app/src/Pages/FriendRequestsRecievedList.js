@@ -19,9 +19,14 @@ import { Link } from 'react-router-dom';
 /* Friend List storing all friends in friends. 
     friends should be a json array with the params
     in Friend. */
-function FriendList({ friends }) {
-    const onRemoveFriendClick = async (username) => {
-        await BackendApi.post('/removefriend', {username: username});
+
+
+function FriendRequestsRecievedList({ friends }) {
+    const onAcceptRequestClick = async (username) => {
+        await BackendApi.post('/addfriend', {username: username});
+    };
+    const onDenyRequestClick = async (username) => {
+        await BackendApi.post('/denyfriendrequest', {username: username});
     };
     return (
         <div className="friends-list-container">
@@ -31,8 +36,11 @@ function FriendList({ friends }) {
                     <div className="friend-card" key={index}>
                         <img src={friend.profile_image_src} alt={friend.name} />
                         <div className="friend-name">{friend.username}</div>
-                        <button onClick={() => onRemoveFriendClick(friend.username)}>
-                            <h3>Remove</h3>
+                        <button onClick={() => onAcceptRequestClick(friend.username)}>
+                            <h3>Accept</h3>
+                        </button>
+                        <button onClick={() => onDenyRequestClick(friend.username)}>
+                            <h3>Deny</h3>
                         </button>
                     </div>
                 ))
@@ -45,4 +53,4 @@ function FriendList({ friends }) {
 
 
 
-export default FriendList;
+export default FriendRequestsRecievedList;

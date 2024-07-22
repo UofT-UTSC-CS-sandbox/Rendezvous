@@ -20,4 +20,22 @@
     border-radius: 5px;
     cursor: pointer;
   }
+  .friendRequestsBtn {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: var(--dl-color-theme-primary2);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
   
+  .friendSentBtn {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: var(--dl-color-theme-primary2);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }

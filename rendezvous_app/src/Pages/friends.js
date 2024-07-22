@@ -8,25 +8,32 @@ import './friends.css';
 /* Friends Page. */
 const Friends = () => {
   const [friendList, setFriendList] = useState(friends);
+  // const [friendRequestList, setFriendRequestList] = useState(friendRequests);
   const navigate = useNavigate();
   const count = useRef(null);
 
+  const getList = () => {
+    BackendApi.post('/friends').then((response) => {
+      setFriendList(response.data);
+    });
+  };
   /* Database Query on Initial Render
         Friends currently DOES NOT update when another user adds
         the current user as a friend */
   useEffect(() => {
-    if (count.current == null) {
-      BackendApi.post('/friends').then((response) => {
-        setFriendList(response.data);
-      });
-    }
-    return () => {
-      count.current = 1;
-    };
+    getList();
+    const interval = setInterval(getList, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleAddFriendClick = () => {
     navigate('/addfriend');
+  };
+  const handleSeeFriendRequestsSentClick = () => {
+    navigate('/friendrequestssent');
+  };
+  const handleSeeFriendRequestsRecievedClick = () => {
+    navigate('/friendrequestsrecieved');
   };
 
   return (
@@ -36,6 +43,12 @@ const Friends = () => {
         <div style={{ marginBottom: '20px' }}>
           <button className='addFriendBtn' onClick={handleAddFriendClick}>
             <h3>+ Add Friend</h3>
+          </button>
+          <button className='friendRequestsBtn' onClick={handleSeeFriendRequestsRecievedClick}>
+            <h3>Friend Requests Recieved</h3>
+          </button>
+          <button className='friendSentBtn' onClick={handleSeeFriendRequestsSentClick}>
+            <h3>Friend Requests Sent</h3>
           </button>
         </div>
       </div>
