@@ -8,6 +8,8 @@ services:
       - backend_fastapi/.env
     volumes:
       - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
 
   fastapi:
     build:
@@ -39,5 +41,10 @@ services:
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
+
 volumes:
   mysql_data:
+
+networks:
+  andyNetwork:
+    driver: bridge

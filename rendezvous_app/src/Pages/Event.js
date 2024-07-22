@@ -14,14 +14,12 @@ import { Link } from 'react-router-dom';
 const Event = ({ title, description, image, id }) => {
     return (
         <div className="event">
-            <Link to={`/event-signup/${id}`}>
+            <Link to={"/event-details"}>
                 <h1 className='event-title'>{title}</h1>
             </Link>
             <img src={image} className="event-image" alt={title} />
             <p className='event-description'>{description}</p>
-            <h5>
-                <Link to={`/event-signup/${id}`} className="event-link">{title}</Link>
-            </h5>
+            
             <br />
         </div>
     );
