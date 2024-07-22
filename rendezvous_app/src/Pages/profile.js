@@ -7,6 +7,7 @@ import RecentHostedEvents from "../components/RecentEvents/recenthostedevents";
 import EventPopup from "../components/RecentEvents/eventpopup";
 
 const Profile = () => {
+  // useState for default profile data
   const [profileData, setProfileData] = useState({
     id: -1,
     username: '',
@@ -20,6 +21,7 @@ const Profile = () => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
+  //functions for handling opening/closing the pop-up for all hosted events
   const handleOpenPopup = () => {
     setIsPopupOpen(true);
   };
@@ -28,6 +30,7 @@ const Profile = () => {
     setIsPopupOpen(false);
   };
 
+  // useEffect to retrieve the user's profile data from database
   useEffect(() => {
     fetchProfileData();
   }, []);
@@ -51,6 +54,7 @@ const Profile = () => {
     }
   };
 
+  //function for handling saving profile changes, like changing a bio
   const handleSaveProfileChanges = async () => {
     try {
       await BackendApi.put("/profile", profileData);
@@ -60,6 +64,7 @@ const Profile = () => {
     }
   };
 
+  //function for handling switching profile pictures, more complicated because it requires going into a user's file storage
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -71,6 +76,7 @@ const Profile = () => {
     }
   };
 
+  //the displayed component's code is here
   return (
     <div className="profile-container">
       <Helmet>
@@ -129,6 +135,7 @@ const Profile = () => {
                   <RecentHostedEvents accountId={profileData.id} />
                 </div>
               </span>
+              {/* The all hosted events pop-up section is here */}
             </div>
             <EventPopup
             isOpen={isPopupOpen}
@@ -139,6 +146,7 @@ const Profile = () => {
         </div>
       </div>
 
+      {/* This section is the pop up for editing the profile page */}
       {showProfileModal && (
                 <div className="modal">
                     <div className="modal-content">

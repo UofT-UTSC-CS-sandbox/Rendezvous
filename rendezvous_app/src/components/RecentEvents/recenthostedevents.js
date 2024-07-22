@@ -6,6 +6,7 @@ const RecentHostedEvents = ({ accountId }) => {
     const [events, setEvents] = useState([]);
     const [error, setError] = useState(null);
 
+    // useEffect to retrieve the 3 most recent events a user has hosted
     useEffect(() => {
         const fetchEvents = async () => {
             try {
@@ -29,7 +30,8 @@ const RecentHostedEvents = ({ accountId }) => {
         return <div>{error}</div>;
     }
 
-    return (
+  //the displayed component's code is here
+  return (
         <div className="event-container">
             {events.map(event => (
                 <div className="event-card" key={event.id}>

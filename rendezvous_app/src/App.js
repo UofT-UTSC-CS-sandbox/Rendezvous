@@ -31,6 +31,7 @@ const App = () => {
                     <Route path="/home" element={<Home />} />
                     <Route path="/about" element={<About />} />
                     
+                    {/* If user is logged in, they may access the webpages that require a login token. If not, do not let them access the webpage. */}
                     { isAuthenticated ? (
                         <>
                             <Route path="/EventsPage" element={<EventsPage />}/>

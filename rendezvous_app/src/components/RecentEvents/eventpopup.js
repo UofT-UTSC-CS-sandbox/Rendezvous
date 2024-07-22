@@ -8,6 +8,7 @@ const EventPopup = ({ isOpen, onClose, accountId }) => {
   const [totalPages, setTotalPages] = useState(1);
   const eventsPerPage = 6;
 
+  // useEffect to retrieve every event a user has hosted, using pagination in the API endpoint
   useEffect(() => {
     if (isOpen && accountId) {
       BackendApi.get(`/accounts/${accountId}/all-hosted-events`, {
@@ -30,6 +31,7 @@ const EventPopup = ({ isOpen, onClose, accountId }) => {
     setCurrentPage(page);
   };
 
+  //the displayed component's code is here
   return (
     <div className="popup-overlay">
       <div className="popup-content">
