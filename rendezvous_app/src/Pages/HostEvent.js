@@ -53,8 +53,8 @@ const HostEvent = () => {
     };
 
     return (
-        <div style={{  flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#DDA0DD' }}>
-            <div style={{ backgroundColor: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
+        <div style={{  flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100%', backgroundColor: '#DDA0DD' }}>
+            <div style={{ backgroundColor: '3560FE', padding: '2rem', borderRadius: '8px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
                 <h1 style={{ marginBottom: '1rem' }}>Create an Event</h1>
                 {msg && <p style={{ color: msg === 'Registration failed' ? 'red' : 'green' }}>{msg}</p>}
                 <form onSubmit={handleSubmit} style={{ display: 'flex', width : '200%', maxWidth: '600px' , alignItems: 'center', gap: '1rem' }}>
@@ -88,8 +88,9 @@ const HostEvent = () => {
                 </form>
                 
 
-                <div style={{ display: 'flex', backgroundColor: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '800px' }}>
-                    <h2>All Events</h2>
+                <div style={{  display: 'flex', backgroundColor: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '800px' }}>
+                    <h2 >All Events</h2>
+                    
                     {events.length > 0 ? (
                         <ul style={{ listStyle: 'none', padding: 0 }}>
                             {events.map((event) => (
