@@ -590,10 +590,6 @@ def get_hosted_events(
         ],
         "totalPages": total_pages
     }
-@app.get("/events/", response_model=List[EventOut])
-def get_events(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    events = db.query(Event).offset(skip).limit(limit).all()
-    return events
 
 @app.get("/events", response_model=list[EventOut])
 async def get_events(db: Session = Depends(get_db)):

@@ -1,9 +1,7 @@
 import React from 'react';
-import Friend from './Friend';
 import BackendApi from './fastapi';
 import './FriendList.css';
 
-import { Link } from 'react-router-dom';
 /** 
 @typedef {Object} FriendProps
 @property {string} username - The username of the friend.

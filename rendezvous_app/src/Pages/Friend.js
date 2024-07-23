@@ -1,6 +1,5 @@
 // Friend.js
 import React from 'react';
-import { Link } from 'react-router-dom';
 const friendbtn = {
     margin: "10px 0",
     padding: "10px",

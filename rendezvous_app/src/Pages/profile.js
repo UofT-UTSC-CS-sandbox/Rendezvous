@@ -87,7 +87,6 @@ const Profile = () => {
         <div className="profile-left-container">
           <div className="profile-card">
             <img
-              alt="image"
               src={profileData.pfp}
               className="profile-pic"
             />

@@ -38,12 +38,22 @@ const App = () => {
                         <Route path="/HostEvent" element={<HostEvent />}/>
                         <Route path="/friends" element={<Friends />} />
                         <Route path="/profile" element={<Profile />} />
+                        <Route path="/event-signup/:id" element={<EventSignup />} />
+                        <Route path="/addfriend" element={<AddFriends />} />
+                        <Route path="/friendrequestsrecieved" element={<FriendRequestsRecieved />} />
+                        <Route path="/friendrequestssent" element={<FriendRequestsSent />} />
+                        <Route path="/event-details" element={<EventDetails />} />
                     </>
                 ) : (
                     <Route element={<PrivateRoute/>}>
                         <Route path="/HostEvent" element={<HostEvent />}/>
                         <Route path="/friends" element={<Friends />} />
                         <Route path="/profile" element={<Profile />} />
+                        <Route path="/event-signup/:id" element={<EventSignup />} />
+                        <Route path="/addfriend" element={<AddFriends />} />
+                        <Route path="/friendrequestsrecieved" element={<FriendRequestsRecieved />} />
+                        <Route path="/friendrequestssent" element={<FriendRequestsSent />} />
+                        <Route path="/event-details" element={<EventDetails />} />
                     </Route>
                 )}
                 <Route
@@ -54,12 +64,6 @@ const App = () => {
                     path="/register"
                     element={<Register />}
                 />
-                <Route path="/event-signup/:id" element={<EventSignup />} />
-                <Route path="/HostEvent" element = {<HostEvent />}/>
-                <Route path="/addfriend" element={<AddFriends />} />
-                <Route path="/friendrequestsrecieved" element={<FriendRequestsRecieved />} />
-                <Route path="/friendrequestssent" element={<FriendRequestsSent />} />
-                <Route path="/event-details" element={<EventDetails />} />
             </Routes>
         </Router>
     </AuthProvider>
