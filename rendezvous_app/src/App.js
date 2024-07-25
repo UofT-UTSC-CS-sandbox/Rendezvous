@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import Home from "./Pages/home";
 import About from "./Pages/about";
-import Events from "./Pages/EventsList";
+
 import Friends from "./Pages/friends";
 import AddFriends from "./Pages/addfriend";
 import Login from "./Pages/login";
@@ -17,7 +17,6 @@ import Profile from "./Pages/profile";
 
 import HostEvent from "./Pages/HostEvent";
 
-import EventSignup from "./Pages/EventSignup";
 import PrivateRoute from "./PrivateRoute";
 import { useAuth } from "./AuthContext";
 
@@ -52,7 +51,6 @@ const App = () => {
                     path="/register"
                     element={<Register />}
                 />
-                <Route path="/event-signup/:id" element={<EventSignup />} />
                 <Route path="/HostEvent" element = {<HostEvent />}/>
                 <Route path="/addfriend" element={<AddFriends />} />
             </Routes>
