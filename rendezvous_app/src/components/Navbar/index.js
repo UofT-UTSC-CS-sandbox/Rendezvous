@@ -1,5 +1,4 @@
 import React from "react";
-import { Nav, NavLink, Bars, NavMenu, NavBtn, NavBtnLink } from "./NavbarElements";
 import { useAuth } from '../../AuthContext';
 
 import { Link } from 'react-router-dom'
@@ -37,7 +36,7 @@ const Navbar = (props) => {
               {props.link2}
             </Link>
             <Link
-              to="/EventsPage"
+              to="/HostEvent"
               className="nav-guest-link3 thq-link thq-body-small"
             >
               {props.link3}
