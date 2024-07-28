@@ -473,7 +473,17 @@ def get_friend_requests_recieved(current_user: Account = Depends(get_current_use
 
 @app.post("/HostEvent")
 def register_event(event: EventIn, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
-    new_event = Event( title= event.title,description= event.description, date= event.date )
+    # Ensure event.date is timezone-aware
+    if event.date.tzinfo is None:
+        event_date = event.date.replace(tzinfo=timezone.utc)
+    else:
+        event_date = event.date
+
+    # Check if the event date is in the past
+    if event_date < datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="Event date cannot be in the past.")
+    
+    new_event = Event(title=event.title, description=event.description, date=event.date)
     new_event.host_id = current_user.id
     db.add(new_event)
     db.commit()
