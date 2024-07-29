@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import BackendApi from "./fastapi";
-
+import { Link } from 'react-router-dom';
 const HostEvent = () => {
     const [formData, setFormData] = useState({
         title: '',
@@ -98,7 +98,7 @@ const HostEvent = () => {
                                     <h3>{event.title}</h3>
                                     <p>{event.description}</p>
                                     <p><strong>Date:</strong> {event.date}</p>
-                                    
+                                    <Link to={`/events/${event.id}`}>View Details</Link>
                                 </li>
                             ))}
                         </ul>
