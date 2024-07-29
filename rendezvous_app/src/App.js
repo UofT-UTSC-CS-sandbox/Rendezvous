@@ -1,6 +1,7 @@
 //import logo from './logo.svg';
 import "./style.css";
 import Navbar from "./components/Navbar";
+
 import {
     BrowserRouter as Router,
     Routes,
@@ -38,7 +39,7 @@ const App = () => {
                         <Route path="/HostEvent" element={<HostEvent />}/>
                         <Route path="/friends" element={<Friends />} />
                         <Route path="/profile" element={<Profile />} />
-                        <Route path="/event-signup/:id" element={<EventSignup />} />
+                        <Route path="/events/:id" element={<EventSignup />} />
                         <Route path="/addfriend" element={<AddFriends />} />
                         <Route path="/friendrequestsrecieved" element={<FriendRequestsRecieved />} />
                         <Route path="/friendrequestssent" element={<FriendRequestsSent />} />
@@ -49,7 +50,7 @@ const App = () => {
                         <Route path="/HostEvent" element={<HostEvent />}/>
                         <Route path="/friends" element={<Friends />} />
                         <Route path="/profile" element={<Profile />} />
-                        <Route path="/event-signup/:id" element={<EventSignup />} />
+                        <Route path="/events/:id" element={<EventSignup />} />
                         <Route path="/addfriend" element={<AddFriends />} />
                         <Route path="/friendrequestsrecieved" element={<FriendRequestsRecieved />} />
                         <Route path="/friendrequestssent" element={<FriendRequestsSent />} />
