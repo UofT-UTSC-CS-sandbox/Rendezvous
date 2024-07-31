@@ -1,88 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import BackendApi from './fastapi';
 import { useNavigate } from 'react-router-dom';
+import friends from './friend_data/friends';
+import FriendList from './FriendList';
+import './friends.css';
 
+/* Friends Page. */
 const Friends = () => {
-    const navigate = useNavigate();
+  const [friendList, setFriendList] = useState(friends);
+  // const [friendRequestList, setFriendRequestList] = useState(friendRequests);
+  const navigate = useNavigate();
+  const count = useRef(null);
 
-    const friendbtn = {
-        margin: "10px 0",
-        padding: "10px",
-        backgroundColor: "#fff",
-        color: "#000",
-        border: "none",
-        borderRadius: "5px",
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        width: "200px",
-        justifyContent: "flex-start",
-    };
+  const getList = () => {
+    BackendApi.post('/friends').then((response) => {
+      setFriendList(response.data);
+    });
+  };
+  /* Database Query on Initial Render
+        Friends currently DOES NOT update when another user adds
+        the current user as a friend */
+  useEffect(() => {
+    getList();
+    const interval = setInterval(getList, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-    const avatarStyle = {
-        width: "30px",
-        height: "30px",
-        borderRadius: "50%",
-        marginRight: "10px",
-    };
+  const handleAddFriendClick = () => {
+    navigate('/addfriend');
+  };
+  const handleSeeFriendRequestsSentClick = () => {
+    navigate('/friendrequestssent');
+  };
+  const handleSeeFriendRequestsRecievedClick = () => {
+    navigate('/friendrequestsrecieved');
+  };
 
-    const addFriendBtn = {
-        margin: "20px 0",
-        padding: "10px",
-        backgroundColor: "green",
-        color: "white",
-        border: "none",
-        borderRadius: "5px",
-        cursor: "pointer",
-    };
-
-    const handleAddFriendClick = () => {
-        navigate('/addfriend');
-    };
-
-    return (
-        <div
-            style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100vh",
-                flexDirection: "column",
-            }}
-        >
-            <h1>Friends List</h1>
-            <div style={{ marginBottom: "20px" }}>
-                <img
-                    src="https://www.w3schools.com/w3images/avatar2.png"
-                    alt="Avatar"
-                    style={{ width: "80px", height: "80px", borderRadius: "50%" }}
-                />
-                <p style={{ margin: "5px 0", fontSize: "16px", color: "black" }}>UserName</p>
-                <button style={addFriendBtn} onClick={handleAddFriendClick}>
-                    <h3>+ Add Friend</h3>
-                </button>
-            </div>
-            <button style={friendbtn}>
-                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" style={avatarStyle} />
-                <h2>Friend 1</h2>
-            </button>
-            <button style={friendbtn}>
-                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" style={avatarStyle} />
-                <h2>Friend 2</h2>
-            </button>
-            <button style={friendbtn}>
-                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" style={avatarStyle} />
-                <h2>Friend 3</h2>
-            </button>
-            <button style={friendbtn}>
-                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" style={avatarStyle} />
-                <h2>Friend 4</h2>
-            </button>
-            <button style={friendbtn}>
-                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" style={avatarStyle} />
-                <h2>Friend 5</h2>
-            </button>
+  return (
+    <div>
+      <div className='centerstyle'>
+        <h1 className='Friends-list-header'>My Friends</h1>
+        <div style={{ marginBottom: '20px' }}>
+          <button className='addFriendBtn' onClick={handleAddFriendClick}>
+            <h3>+ Add Friend</h3>
+          </button>
+          <button className='friendRequestsBtn' onClick={handleSeeFriendRequestsRecievedClick}>
+            <h3>Friend Requests Recieved</h3>
+          </button>
+          <button className='friendSentBtn' onClick={handleSeeFriendRequestsSentClick}>
+            <h3>Friend Requests Sent</h3>
+          </button>
         </div>
-    );
+      </div>
+      <FriendList friends={friendList} />
+    </div>
+  );
 };
 
 export default Friends;

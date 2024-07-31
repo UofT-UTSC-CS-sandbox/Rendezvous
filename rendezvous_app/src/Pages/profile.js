@@ -3,9 +3,13 @@ import { Helmet } from 'react-helmet'
 import BackendApi from "./fastapi";
 import './profile.css'
 import pfpplaceholder from './images/stickmanpfp.png';
+import RecentHostedEvents from "../components/RecentEvents/recenthostedevents";
+import EventPopup from "../components/RecentEvents/eventpopup";
 
 const Profile = () => {
+  // useState for default profile data
   const [profileData, setProfileData] = useState({
+    id: -1,
     username: '',
     title: '',
     bio: '',
@@ -15,7 +19,18 @@ const Profile = () => {
     pfp: null,
   });
   const [showProfileModal, setShowProfileModal] = useState(false);
- 
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  //functions for handling opening/closing the pop-up for all hosted events
+  const handleOpenPopup = () => {
+    setIsPopupOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
+
+  // useEffect to retrieve the user's profile data from database
   useEffect(() => {
     fetchProfileData();
   }, []);
@@ -25,6 +40,7 @@ const Profile = () => {
       const response = await BackendApi.get("/profile");
       const userData = response.data;
       setProfileData({
+        id: userData.id,
         username: userData.username,
         title: userData.title || 'No Title Yet',
         bio: userData.bio || 'No Bio Yet',
@@ -38,6 +54,7 @@ const Profile = () => {
     }
   };
 
+  //function for handling saving profile changes, like changing a bio
   const handleSaveProfileChanges = async () => {
     try {
       await BackendApi.put("/profile", profileData);
@@ -47,6 +64,7 @@ const Profile = () => {
     }
   };
 
+  //function for handling switching profile pictures, more complicated because it requires going into a user's file storage
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -58,6 +76,7 @@ const Profile = () => {
     }
   };
 
+  //the displayed component's code is here
   return (
     <div className="profile-container">
       <Helmet>
@@ -68,7 +87,6 @@ const Profile = () => {
         <div className="profile-left-container">
           <div className="profile-card">
             <img
-              alt="image"
               src={profileData.pfp}
               className="profile-pic"
             />
@@ -109,12 +127,25 @@ const Profile = () => {
             <div className="profile-hosted">
               <span className="events-hosted">
                 <span>Events Hosted</span>
+                <button className="view-events-btn" onClick={handleOpenPopup}>
+                  All Hosted Events
+                </button>
+                <div>
+                  <RecentHostedEvents accountId={profileData.id} />
+                </div>
               </span>
+              {/* The all hosted events pop-up section is here */}
             </div>
+            <EventPopup
+            isOpen={isPopupOpen}
+            onClose={handleClosePopup}
+            accountId={profileData.id}
+          />
           </div>
         </div>
       </div>
 
+      {/* This section is the pop up for editing the profile page */}
       {showProfileModal && (
                 <div className="modal">
                     <div className="modal-content">
