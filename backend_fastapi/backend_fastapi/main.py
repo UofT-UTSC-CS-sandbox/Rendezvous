@@ -50,6 +50,16 @@ friend_request_table = Table(
     Column("right_friend_id", Integer, ForeignKey("accounts.id"), primary_key=True),
 )
 
+""" Table for account-event relationship. An 'edge' in this table exists if and only
+    if the user (Account) has attended, or has accepted an invitation to attend, event (Event).
+"""
+attending_table = Table(
+    "attending_table",
+    Base.metadata,
+    Column("account_id", ForeignKey("accounts.id"), primary_key=True),
+    Column("event_id", ForeignKey("events.id"), primary_key=True)
+)
+
 class FriendCompressedProfile(BaseModel):
     username: str
     profile_image_src: str
@@ -69,6 +79,7 @@ class Account(Base):
     twitter = Column(String(100), unique=False, nullable=True)
     instagram = Column(String(100), unique=False, nullable=True)
     hosted_events = relationship('Event', back_populates='host')
+    events = relationship('Event', back_populates='attendees')
 
     # Friend m2m relationship.
     # Database updates should maintatin symmetry.
@@ -105,6 +116,10 @@ class Account(Base):
         back_populates="friend_requests_recieved",
     )
 
+    events: Mapped[List["Event"]] = relationship(
+        secondary=attending_table, back_populates= "attendees"
+    )
+
     def __repr__(self) -> str:
         return f"Account(id={self.id!r}, email={self.email!r})"
     
@@ -122,6 +137,9 @@ class Event(Base):
     date = Column(Date, nullable = False)
     host_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
     host = relationship('Account', back_populates='hosted_events')
+    attendees: Mapped[List["Account"]] = relationship(
+        secondary=attending_table, back_populates= "events"
+    )
 
 engine = create_engine(DATABASE_URL, echo=True)
 # engine = create_engine(DATABASE_URL)
