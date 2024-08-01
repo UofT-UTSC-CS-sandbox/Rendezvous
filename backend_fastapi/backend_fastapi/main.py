@@ -2,7 +2,7 @@ from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, Query
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func
+from sqlalchemy import create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func, ARRAY
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
@@ -53,7 +53,18 @@ friend_request_table = Table(
 class FriendCompressedProfile(BaseModel):
     username: str
     profile_image_src: str
-     
+
+
+
+attending_table = Table(
+    "attending_table",
+    Base.metadata,
+    Column("account_id", ForeignKey("accounts.id"), primary_key=True),
+    Column("event_id", ForeignKey("events.id"), primary_key=True)
+)
+
+
+
 # accounts table
 class Account(Base):
     __tablename__ = 'accounts'
@@ -69,7 +80,9 @@ class Account(Base):
     twitter = Column(String(100), unique=False, nullable=True)
     instagram = Column(String(100), unique=False, nullable=True)
     hosted_events = relationship('Event', back_populates='host')
-
+    attending_events: Mapped[List["Event"]] = relationship(
+        secondary=attending_table, back_populates= "attendees"
+    )
     # Friend m2m relationship.
     # Database updates should maintatin symmetry.
     # primary and secondary join needed to distinguish
@@ -113,6 +126,10 @@ class Account(Base):
         # Once profile feature is implemented, this should be changed.
         return FriendCompressedProfile(username = self.username, profile_image_src="https://www.w3schools.com/w3images/avatar2.png")     
 
+
+
+
+
 # events table
 class Event(Base):
     __tablename__ = 'events'
@@ -122,6 +139,19 @@ class Event(Base):
     date = Column(Date, nullable = False)
     host_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
     host = relationship('Account', back_populates='hosted_events')
+    attendees: Mapped[List["Account"]] = relationship(
+        secondary=attending_table, back_populates= "events"
+    )
+
+""" Table for account-event relationship. An 'edge' in this table exists if and only
+    if the user (Account) has attended, or has accepted an invitation to attend, event (Event).
+"""
+
+
+
+
+
+
 
 engine = create_engine(DATABASE_URL, echo=True)
 # engine = create_engine(DATABASE_URL)
@@ -300,7 +330,7 @@ class EventOut(BaseModel):
     description: str
     date: datetime
     host_id: int
-
+    attendees: list
 
 class UserUpdate(BaseModel):
     title: Optional[str]
@@ -595,6 +625,24 @@ def get_hosted_events(
 async def get_events(db: Session = Depends(get_db)):
     events = db.query(Event).all()
     return events
+
+@app.post("/events/{event_id}/signup")
+def signup_for_event(event_id: int, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    # Check if the user is already signed up
+    if current_user in event.attendees:
+        raise HTTPException(status_code=400, detail="User already signed up for the event")
+
+    # Add the user to the event's attendees
+    event.attendees.append(current_user)
+    db.commit()
+
+    return {"message": "Signed up successfully"}
+
+
 
 @app.get("/events/{event_id}", response_model=EventOut)
 def get_event(event_id: int, db: Session = Depends(get_db)):

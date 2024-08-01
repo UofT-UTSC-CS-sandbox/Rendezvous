@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import BackendApi from "./fastapi";
+
 import './EventSignup.css'; // Import the CSS file
 
 const EventSignup = () => {
@@ -24,6 +25,8 @@ const EventSignup = () => {
   const handleSignUp = async () => {
     try {
       const response = await BackendApi.post(`/events/${id}/signup`, {
+        
+        
         // Add necessary headers and body
       });
       console.log('Response:', response.data);
