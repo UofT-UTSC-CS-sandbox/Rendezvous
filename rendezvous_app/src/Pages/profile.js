@@ -128,7 +128,7 @@ const Profile = () => {
               <span className="events-attended">
                 <span>Events Attended</span>
                 <button className="view-events-btn" onClick={() => setIsAttendedPopupOpen(true)}>
-                  All Attended Events
+                  See All
                 </button>
                 {profileData.id && (
                   <div>
@@ -141,7 +141,7 @@ const Profile = () => {
               <span className="events-hosted">
                 <span>Events Hosted</span>
                 <button className="view-events-btn" onClick={handleOpenPopup}>
-                  All Hosted Events
+                  See All
                 </button>
                 {profileData.id && (
                   <div>
