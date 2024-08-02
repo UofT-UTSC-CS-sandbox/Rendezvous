@@ -4,12 +4,13 @@ import BackendApi from "./fastapi";
 import './profile.css'
 import pfpplaceholder from './images/stickmanpfp.png';
 import RecentHostedEvents from "../components/RecentEvents/recenthostedevents";
+import RecentAttendedEvents from "../components/RecentEvents/recentattendedevents";
 import EventPopup from "../components/RecentEvents/eventpopup";
 
 const Profile = () => {
   // useState for default profile data
   const [profileData, setProfileData] = useState({
-    id: -1,
+    id: null,
     username: '',
     title: '',
     bio: '',
@@ -122,7 +123,14 @@ const Profile = () => {
           </div>
           <div className="profile-all-events-container">
             <div className="profile-attended">
-              <span className="events-attended">Events Attended</span>
+              <span className="events-attended">
+                <span>Events Attended</span>
+                {profileData.id && (
+                  <div>
+                    <RecentAttendedEvents accountId={profileData.id} />
+                  </div>
+                )}
+                </span>
             </div>
             <div className="profile-hosted">
               <span className="events-hosted">
@@ -130,9 +138,11 @@ const Profile = () => {
                 <button className="view-events-btn" onClick={handleOpenPopup}>
                   All Hosted Events
                 </button>
-                <div>
-                  <RecentHostedEvents accountId={profileData.id} />
-                </div>
+                {profileData.id && (
+                  <div>
+                    <RecentHostedEvents accountId={profileData.id} />
+                  </div>
+                )}
               </span>
               {/* The all hosted events pop-up section is here */}
             </div>

@@ -2,7 +2,7 @@ from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, Query
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func, ARRAY
+from sqlalchemy import create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func, select
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
@@ -305,6 +305,16 @@ class UserOut(BaseModel):
     id: int
     username: str
     email: str
+    password: Optional[str]
+    title: Optional[str]
+    bio: Optional[str]
+    pfp: Optional[bytes] 
+    github: Optional[str]
+    twitter: Optional[str]
+    instagram: Optional[str]
+
+    class Config:
+        from_attributes = True
 
 class UsernameIn(BaseModel):
     username: str
@@ -335,6 +345,9 @@ class EventOut(BaseModel):
     class Config:
         from_attributes = True
 
+    @classmethod
+    def model_validate(cls, obj):
+        return cls(**{k: getattr(obj, k) for k in cls.__annotations__})
 class UserUpdate(BaseModel):
     title: Optional[str]
     bio: Optional[str]
@@ -633,6 +646,29 @@ def get_hosted_events(
         ],
         "totalPages": total_pages
     }
+
+@app.get("/accounts/{account_id}/attended-events", response_model=List[EventOut])
+def get_attended_events(account_id: int, db: Session = Depends(get_db)):
+    """
+    Endpoint to get the 3 most recent events a user has attended.
+
+    Args:
+        account_id (int): The unique ID of the account we wish to get attended events from.
+        db (Session): Database session dependency.
+    
+    Returns:
+        List[EventOut]: A list of the 3 most recent events a user has attended.
+    """
+    account = db.query(Account).filter(Account.id == account_id).first()
+    if account:
+        attended_events = (db.query(Event)
+                           .join(attending_table)
+                           .filter(attending_table.c.account_id == account_id)
+                           .order_by(Event.date.desc())
+                           .limit(3)
+                           .all())
+        return [EventOut.model_validate(event) for event in attended_events]
+    raise HTTPException(status_code=404, detail="User not found")
 
 @app.get("/events", response_model=list[EventOut])
 async def get_events(db: Session = Depends(get_db)):
