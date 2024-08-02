@@ -25,17 +25,6 @@ const HostEvent = () => {
         }
     };
 
-
-
-
-
-
-
-
-
-
-
-
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -88,9 +77,10 @@ const HostEvent = () => {
                 </form>
                 
 
+
                 <div style={{  display: 'flex', backgroundColor: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', textAlign: 'center', width: '100%', maxWidth: '800px' }}>
                     <h2 >All Events</h2>
-                    
+                      
                     {events.length > 0 ? (
                         <ul style={{ listStyle: 'none', padding: 0 }}>
                             {events.map((event) => (

@@ -32,8 +32,8 @@ function FriendRequestsRecievedSent({ friends }) {
                     <div className="friend-card" key={index}>
                         <img src={friend.profile_image_src} alt={friend.name} />
                         <div className="friend-name">{friend.username}</div>
-                        <button onClick={() => onCancelFriendRequestClick(friend.username)}>
-                            <h3>Remove</h3>
+                        <button className='button' onClick={() => onCancelFriendRequestClick(friend.username)}>
+                            Remove
                         </button>
                     </div>
                 ))
