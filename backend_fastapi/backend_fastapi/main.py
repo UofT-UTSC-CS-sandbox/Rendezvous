@@ -197,7 +197,10 @@ class Event(Base):
 engine = create_engine(DATABASE_URL, echo=True)
 # engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base.metadata.drop_all(bind=engine)
+
+# The below line will drop all schemas. Uncomment it iff you are running for the first time after a change to one of the classes/relations.
+# Base.metadata.drop_all(bind=engine)
+
 Base.metadata.create_all(bind=engine)
 
 def get_db():
