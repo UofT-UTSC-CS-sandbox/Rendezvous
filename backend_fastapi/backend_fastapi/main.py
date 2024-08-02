@@ -639,7 +639,7 @@ def get_hosted_events(account_id: int, db: Session = Depends(get_db)):
     if account:
         hosted_events = (db.query(Event)
                          .filter(Event.host_id == account_id)
-                         .order_by(Event.date.desc())
+                         .order_by(Event.date.asc())
                          .limit(3)
                          .all())
         return hosted_events
@@ -673,7 +673,7 @@ def get_hosted_events(
     events_query = (
         db.query(Event)
         .filter(Event.host_id == account_id)
-        .order_by(Event.date.desc())
+        .order_by(Event.date.asc())
         .offset(offset)
         .limit(limit)
     )
@@ -716,11 +716,69 @@ def get_attended_events(account_id: int, db: Session = Depends(get_db)):
         attended_events = (db.query(Event)
                            .join(attending_table)
                            .filter(attending_table.c.account_id == account_id)
-                           .order_by(Event.date.desc())
+                           .order_by(Event.date.asc())
                            .limit(3)
                            .all())
         return [EventOut.model_validate(event) for event in attended_events]
     raise HTTPException(status_code=404, detail="User not found")
+
+@app.get("/accounts/{account_id}/all-attended-events", response_model=dict)
+def get_attended_events(
+    account_id: int,
+    page: int = Query(1, gt=0),
+    limit: int = Query(6, gt=0),
+    db: Session = Depends(get_db)
+):
+    """
+    Endpoint to get all events a user has attended, using pagination.
+
+    Args:
+        account_id (int): The unique ID of the account to get attended events from.
+        page (int): The page of events the user starts looking at.
+        limit (int): The total amount of events displayed per page.
+        db (Session): Database session dependency.
+    
+    Returns:
+        dict: A dictionary containing a list of attended events and the total number of pages.
+    """
+    account = db.query(Account).filter(Account.id == account_id).first()
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+
+    offset = (page - 1) * limit
+
+    # Query to get all events a user has attended
+    events_query = (
+        db.query(Event)
+        .join(attending_table, attending_table.c.event_id == Event.id)
+        .filter(attending_table.c.account_id == account_id)
+        .order_by(Event.date.asc())
+        .offset(offset)
+        .limit(limit)
+    )
+    events = events_query.all()
+
+    # Query to get the total count of attended events
+    total_events_query = (
+        db.query(func.count(Event.id))
+        .join(attending_table, attending_table.c.event_id == Event.id)
+        .filter(attending_table.c.account_id == account_id)
+    )
+    total_count = total_events_query.scalar()
+    total_pages = (total_count + limit - 1) // limit
+
+    return {
+        "events": [
+            {
+                "id": event.id,
+                "title": event.title,
+                "description": event.description,
+                "date": event.date.isoformat()
+            }
+            for event in events
+        ],
+        "totalPages": total_pages
+    }
 
 @app.get("/events", response_model=list[EventOut])
 async def get_events(db: Session = Depends(get_db)):
