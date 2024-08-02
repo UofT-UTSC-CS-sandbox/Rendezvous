@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import BackendApi from "./fastapi";
-
+import { Link } from 'react-router-dom';
 const HostEvent = () => {
     const [formData, setFormData] = useState({
         title: '',
@@ -72,7 +72,7 @@ const HostEvent = () => {
                         type="date"
                         name="date"
                         placeholder="Date"
-                        value={formData.date}
+                        value={formData.datetime}
                         onChange={handleChange}
                         style={{ padding: '0.5rem', width: '100%', maxWidth: '300px', borderRadius: '4px', border: '1px solid #ccc' }}
                     />
@@ -92,7 +92,7 @@ const HostEvent = () => {
                                     <h3>{event.title}</h3>
                                     <p>{event.description}</p>
                                     <p><strong>Date:</strong> {event.date}</p>
-                                    
+                                    <Link to={`/events/${event.id}`}>View Details</Link>
                                 </li>
                             ))}
                         </ul>
