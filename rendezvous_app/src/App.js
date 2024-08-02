@@ -16,6 +16,7 @@ import Register from "./Pages/register";
 import Profile from "./Pages/profile";
 import EventDetails from './Pages/event-details'
 
+import HostEvent from "./Pages/HostEvent";
 
 import EventSignup from "./Pages/EventSignup";
 import PrivateRoute from "./PrivateRoute";
@@ -53,6 +54,7 @@ const App = () => {
                     element={<Register />}
                 />
                 <Route path="/event-signup/:id" element={<EventSignup />} />
+                <Route path="/HostEvent" element = {<HostEvent />}/>
                 <Route path="/addfriend" element={<AddFriends />} />
                 <Route path="/event-details" element={<EventDetails />} />
             </Routes>

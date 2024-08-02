@@ -19,9 +19,7 @@ const Event = ({ title, description, image, id }) => {
             </Link>
             <img src={image} className="event-image" alt={title} />
             <p className='event-description'>{description}</p>
-            <h5>
-                <Link to={`/event-signup/${id}`} className="event-link">{title}</Link>
-            </h5>
+            
             <br />
         </div>
     );

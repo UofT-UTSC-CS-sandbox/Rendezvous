@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import React, { useState } from 'react';
-import BackendApi from './fastapi'
+import BackendApi from './fastapi';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext'
 
@@ -26,13 +26,14 @@ const Login = (props) => {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
             });
-            login(response.data.access_token)
+            login(response.data.access_token);
             setMsg('Login Successful!');
             navigate('/home');
         } catch (error) {
             setMsg('Login failed');
         }
     };
+
     return (
         <div className="log-in-container">
             <Helmet>
@@ -173,4 +174,3 @@ Login.defaultProps = {
   }
 
 export default Login;
-

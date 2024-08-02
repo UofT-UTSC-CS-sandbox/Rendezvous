@@ -16,6 +16,7 @@ python-dotenv = "^1.0.1"
 cryptography = "^42.0.8"
 pyjwt = "^2.8.0"
 passlib = "^1.7.4"
+alembic = "^1.13.2"
 
 
 [build-system]
