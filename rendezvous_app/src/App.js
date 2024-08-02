@@ -1,6 +1,7 @@
 //import logo from './logo.svg';
 import "./style.css";
 import Navbar from "./components/Navbar";
+
 import {
     BrowserRouter as Router,
     Routes,
@@ -8,23 +9,23 @@ import {
 } from "react-router-dom";
 import Home from "./Pages/home";
 import About from "./Pages/about";
-import Events from "./Pages/EventsList";
 import Friends from "./Pages/friends";
 import AddFriends from "./Pages/addfriend";
+import FriendRequestsRecieved from "./Pages/friendrequestsrecieved";
+import FriendRequestsSent from "./Pages/friendrequestssent";
 import Login from "./Pages/login";
 import Register from "./Pages/register";
 import Profile from "./Pages/profile";
 import EventDetails from './Pages/event-details'
-
 import HostEvent from "./Pages/HostEvent";
-
 import EventSignup from "./Pages/EventSignup";
 import PrivateRoute from "./PrivateRoute";
-import { useAuth } from "./AuthContext";
+import { AuthProvider, useAuth } from "./AuthContext";
 
 const App = () => {
     const { isAuthenticated } = useAuth();
     return (
+    <AuthProvider>
         <Router>
             <Navbar />
             <Routes>
@@ -32,17 +33,28 @@ const App = () => {
                 <Route path="/home" element={<Home />} />
                 <Route path="/about" element={<About />} />
                 
+                {/* If user is logged in, they may access the webpages that require a login token. If not, do not let them access the webpage. */}
                 { isAuthenticated ? (
                     <>
-                        <Route path="/EventsList" element={<Events />}/>
+                        <Route path="/HostEvent" element={<HostEvent />}/>
                         <Route path="/friends" element={<Friends />} />
                         <Route path="/profile" element={<Profile />} />
+                        <Route path="/events/:id" element={<EventSignup />} />
+                        <Route path="/addfriend" element={<AddFriends />} />
+                        <Route path="/friendrequestsrecieved" element={<FriendRequestsRecieved />} />
+                        <Route path="/friendrequestssent" element={<FriendRequestsSent />} />
+                        <Route path="/event-details" element={<EventDetails />} />
                     </>
                 ) : (
                     <Route element={<PrivateRoute/>}>
-                        <Route path="/EventsList" element={<Events />}/>
+                        <Route path="/HostEvent" element={<HostEvent />}/>
                         <Route path="/friends" element={<Friends />} />
                         <Route path="/profile" element={<Profile />} />
+                        <Route path="/events/:id" element={<EventSignup />} />
+                        <Route path="/addfriend" element={<AddFriends />} />
+                        <Route path="/friendrequestsrecieved" element={<FriendRequestsRecieved />} />
+                        <Route path="/friendrequestssent" element={<FriendRequestsSent />} />
+                        <Route path="/event-details" element={<EventDetails />} />
                     </Route>
                 )}
                 <Route
@@ -53,12 +65,9 @@ const App = () => {
                     path="/register"
                     element={<Register />}
                 />
-                <Route path="/event-signup/:id" element={<EventSignup />} />
-                <Route path="/HostEvent" element = {<HostEvent />}/>
-                <Route path="/addfriend" element={<AddFriends />} />
-                <Route path="/event-details" element={<EventDetails />} />
             </Routes>
         </Router>
+    </AuthProvider>
     );
 };
 

@@ -40,7 +40,9 @@ services:
       - ./rendezvous_app:/app
       - /app/node_modules
     environment:
-      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - FAST_REFRESH=false
+      - WDS_SOCKET_PORT=42070
 
 volumes:
   mysql_data:
