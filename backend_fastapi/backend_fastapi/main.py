@@ -765,7 +765,7 @@ def signup_for_event(event_id: int, current_user: Account = Depends(get_current_
 def get_event_recommendation( current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
     events = {}
     for friend in current_user.friends:
-        for event in {event for event in list for list in [friend.attending_events, friend.hosted_events]}:
+        for event in set().union(friend.attending_events, friend.hosted_events):
             if event in events.keys():
                 events[event] += current_user.friend_weights[friend.username]
             else:
