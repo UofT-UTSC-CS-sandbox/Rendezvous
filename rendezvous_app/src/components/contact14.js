@@ -14,11 +14,11 @@ const Contact14 = (props) => {
           </svg>
           <div className="contact14-contact-info">
             <div className="contact14-content1">
-              <h3 className="contact14-text thq-heading-3">{props.heading1}</h3>
-              <p className="contact14-text1 thq-body-large">{props.content1}</p>
+              <h3 className="contact14-text thq-heading-3">{props.heading10}</h3>
+              <p className="contact14-text1 thq-body-large">{props.content10}</p>
             </div>
             <span className="contact14-email thq-body-small">
-              {props.email1}
+              {props.email10}
             </span>
           </div>
         </div>
@@ -29,12 +29,12 @@ const Contact14 = (props) => {
           <div className="contact14-contact-info1">
             <div className="contact14-content3">
               <h3 className="contact14-text2 thq-heading-3">
-                {props.heading2}
+                {props.heading20}
               </h3>
-              <p className="contact14-text3 thq-body-large">{props.content2}</p>
+              <p className="contact14-text3 thq-body-large">{props.content20}</p>
             </div>
             <span className="contact14-email1 thq-body-small">
-              {props.link1}
+              {props.link10}
             </span>
           </div>
         </div>
@@ -45,12 +45,12 @@ const Contact14 = (props) => {
           <div className="contact14-contact-info2">
             <div className="contact14-content5">
               <h3 className="contact14-text4 thq-heading-3">
-                {props.heading3}
+                {props.heading30}
               </h3>
-              <p className="contact14-text5 thq-body-large">{props.content3}</p>
+              <p className="contact14-text5 thq-body-large">{props.content30}</p>
             </div>
             <span className="contact14-phone thq-body-small">
-              {props.phone1}
+              {props.phone10}
             </span>
           </div>
         </div>
@@ -61,14 +61,14 @@ const Contact14 = (props) => {
           <div className="contact14-contact-info3">
             <div className="contact14-content7">
               <h3 className="contact14-text6 thq-heading-3">
-                {props.heading4}
+                {props.heading40}
               </h3>
               <p className="contact14-content4 thq-body-large">
-                {props.content4}
+                {props.content40}
               </p>
             </div>
             <span className="contact14-address thq-body-small">
-              {props.address1}
+              {props.address10}
             </span>
           </div>
         </div>
@@ -78,37 +78,37 @@ const Contact14 = (props) => {
 }
 
 Contact14.defaultProps = {
-  heading1: 'Date',
-  content2:
+  heading10: 'Date',
+  content20:
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in ero.',
-  phone1: '+123-456-7890',
-  heading4: 'Location',
-  heading2: 'Requirements',
-  link1: 'Start new chat',
-  content1:
+  phone10: '+123-456-7890',
+  heading40: 'Location',
+  heading20: 'Requirements',
+  link10: 'Start new chat',
+  content10:
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in ero.',
-  content4:
+  content40:
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in ero.',
-  email1: 'info@example.com',
-  heading3: 'Contact',
-  address1: '123 Main Street, City, Country',
-  content3:
+  email10: 'info@example.com',
+  heading30: 'Contact',
+  address10: '123 Main Street, City, Country',
+  content30:
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in ero.',
 }
 
 Contact14.propTypes = {
-  heading1: PropTypes.string,
-  content2: PropTypes.string,
-  phone1: PropTypes.string,
-  heading4: PropTypes.string,
-  heading2: PropTypes.string,
-  link1: PropTypes.string,
-  content1: PropTypes.string,
-  content4: PropTypes.string,
-  email1: PropTypes.string,
-  heading3: PropTypes.string,
-  address1: PropTypes.string,
-  content3: PropTypes.string,
+  heading10: PropTypes.string,
+  content20: PropTypes.string,
+  phone10: PropTypes.string,
+  heading40: PropTypes.string,
+  heading20: PropTypes.string,
+  link10: PropTypes.string,
+  content10: PropTypes.string,
+  content40: PropTypes.string,
+  email10: PropTypes.string,
+  heading30: PropTypes.string,
+  address10: PropTypes.string,
+  content30: PropTypes.string,
 }
 
 export default Contact14

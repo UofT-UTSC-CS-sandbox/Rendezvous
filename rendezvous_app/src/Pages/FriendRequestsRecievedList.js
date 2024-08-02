@@ -34,12 +34,14 @@ function FriendRequestsRecievedList({ friends }) {
                     <div className="friend-card" key={index}>
                         <img src={friend.profile_image_src} alt={friend.name} />
                         <div className="friend-name">{friend.username}</div>
-                        <button onClick={() => onAcceptRequestClick(friend.username)}>
-                            <h3>Accept</h3>
+                        <div className="friend-buttons">
+                        <button className='button'onClick={() => onAcceptRequestClick(friend.username)}>
+                            Accept
                         </button>
-                        <button onClick={() => onDenyRequestClick(friend.username)}>
-                            <h3>Deny</h3>
+                        <button className='button' onClick={() => onDenyRequestClick(friend.username)}>
+                            Deny
                         </button>
+                        </div>
                     </div>
                 ))
                 }

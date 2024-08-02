@@ -187,7 +187,7 @@ Team5.defaultProps = {
     'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
   heading1: 'Meet Our Team',
   member3: 'Samuel Mantilla',
-  member4: 'Shijun Sui',
+  member4: 'Sean Fridkin',
   member2Src:
     'https://images.unsplash.com/photo-1521119989659-a83eee488004?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcxODQwODcwM3w&ixlib=rb-4.0.3&q=80&w=1080',
   member4Src:

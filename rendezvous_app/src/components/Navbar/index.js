@@ -19,11 +19,13 @@ const Navbar = (props) => {
         
         <header className={`nav-guest-container ${props.rootClassName} `}>
       <header data-thq="thq-navbar" className="nav-guest-navbar-interactive">
+        <a href="/home" className="nav-guest-logo">
         <img
           alt={props.logoAlt}
           src={props.logoSrc}
           className="nav-guest-image1"
         />
+        </a>
         <div data-thq="thq-navbar-nav" className="nav-guest-desktop-menu">
           <nav className="nav-guest-links">
             <Link to="/home" className="nav-guest-link1 thq-link thq-body-small">

@@ -159,9 +159,9 @@ const Profile = () => {
       {showProfileModal && (
                 <div className="modal">
                     <div className="modal-content">
-                        <h2>Edit Profile</h2>
+                        <h2 className="thq-heading-3" >Edit Profile</h2>
                         <div className="form-group">
-                            <label htmlFor="profile-pic">Profile Picture</label>
+                            <label className="inside-text" htmlFor="profile-pic">Profile Picture</label>
                             <input
                                 type="file"
                                 accept="image/*"
@@ -169,7 +169,7 @@ const Profile = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="title">Title</label>
+                            <label className="inside-text" htmlFor="title">Title</label>
                             <input
                                 type="text"
                                 id="title"
@@ -178,7 +178,7 @@ const Profile = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="about-me">About Me</label>
+                            <label className="inside-text" htmlFor="about-me">About Me</label>
                             <textarea
                                 id="about-me"
                                 value={profileData.bio}
@@ -186,7 +186,7 @@ const Profile = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="github">Github</label>
+                            <label className="inside-text" htmlFor="github">Github</label>
                             <input
                                 type="text"
                                 id="github"
@@ -195,7 +195,7 @@ const Profile = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="twitter">Twitter</label>
+                            <label className="inside-text" htmlFor="twitter">Twitter</label>
                             <input
                                 type="text"
                                 id="twitter"
@@ -204,7 +204,7 @@ const Profile = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="instagram">Instagram</label>
+                            <label className="inside-text" htmlFor="instagram">Instagram</label>
                             <input
                                 type="text"
                                 id="instagram"
@@ -212,8 +212,10 @@ const Profile = () => {
                                 onChange={(e) => setProfileData({ ...profileData, instagram: e.target.value })}
                             />
                         </div>
+                        <div className="button-container-popup">
                         <button className="save-changes-btn" onClick={handleSaveProfileChanges}>Save Changes</button>
                         <button className="close-modal-btn" onClick={() => setShowProfileModal(false)}>Close</button>
+                        </div>
                     </div>
                 </div>
             )}
