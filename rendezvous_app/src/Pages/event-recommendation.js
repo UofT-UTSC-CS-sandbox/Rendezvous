@@ -15,7 +15,7 @@ useEffect(() => {
 
 const fetchEvents = async () => {
     try {
-        const response = await BackendApi.push('/eventrecommendation');
+        const response = await BackendApi.post('/eventrecommendation');
         setEvents(response.data);
     } catch (error) {
         console.error('Error fetching events:', error);
