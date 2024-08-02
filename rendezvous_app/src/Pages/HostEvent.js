@@ -25,17 +25,6 @@ const HostEvent = () => {
         }
     };
 
-
-
-
-
-
-
-
-
-
-
-
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -48,9 +37,14 @@ const HostEvent = () => {
             setMsg('Event was created. You are the host!');
         } catch (error) {
             console.error('Error:', error);
-            setMsg('Registration failed');
+            if (error.response && error.response.data && error.response.data.detail === 'Event date cannot be in the past.') {
+                setMsg('Event date cannot be in the past.');
+            } else {
+                setMsg('Registration failed');
+            }
         }
     };
+    
 
     return (
         <div style={{  flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100%', backgroundColor: '#DDA0DD' }}>

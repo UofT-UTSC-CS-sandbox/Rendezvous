@@ -355,6 +355,16 @@ class UserOut(BaseModel):
     id: int
     username: str
     email: str
+    password: Optional[str]
+    title: Optional[str]
+    bio: Optional[str]
+    pfp: Optional[bytes] 
+    github: Optional[str]
+    twitter: Optional[str]
+    instagram: Optional[str]
+
+    class Config:
+        from_attributes = True
 
 class UsernameIn(BaseModel):
     username: str
@@ -386,6 +396,9 @@ class EventOut(BaseModel):
     class Config:
         from_attributes = True
 
+    @classmethod
+    def model_validate(cls, obj):
+        return cls(**{k: getattr(obj, k) for k in cls.__annotations__})
 class UserUpdate(BaseModel):
     title: Optional[str]
     bio: Optional[str]
@@ -562,7 +575,17 @@ def get_friend_requests_recieved(current_user: Account = Depends(get_current_use
 
 @app.post("/HostEvent")
 def register_event(event: EventIn, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
-    new_event = Event( title= event.title,description= event.description, date= event.date )
+    # Ensure event.date is timezone-aware
+    if event.date.tzinfo is None:
+        event_date = event.date.replace(tzinfo=timezone.utc)
+    else:
+        event_date = event.date
+
+    # Check if the event date is in the past
+    if event_date < datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="Event date cannot be in the past.")
+    
+    new_event = Event(title=event.title, description=event.description, date=event.date)
     new_event.host_id = current_user.id
     db.add(new_event)
     db.commit()
@@ -679,6 +702,29 @@ def get_hosted_events(
         ],
         "totalPages": total_pages
     }
+
+@app.get("/accounts/{account_id}/attended-events", response_model=List[EventOut])
+def get_attended_events(account_id: int, db: Session = Depends(get_db)):
+    """
+    Endpoint to get the 3 most recent events a user has attended.
+
+    Args:
+        account_id (int): The unique ID of the account we wish to get attended events from.
+        db (Session): Database session dependency.
+    
+    Returns:
+        List[EventOut]: A list of the 3 most recent events a user has attended.
+    """
+    account = db.query(Account).filter(Account.id == account_id).first()
+    if account:
+        attended_events = (db.query(Event)
+                           .join(attending_table)
+                           .filter(attending_table.c.account_id == account_id)
+                           .order_by(Event.date.desc())
+                           .limit(3)
+                           .all())
+        return [EventOut.model_validate(event) for event in attended_events]
+    raise HTTPException(status_code=404, detail="User not found")
 
 @app.get("/events", response_model=list[EventOut])
 async def get_events(db: Session = Depends(get_db)):
