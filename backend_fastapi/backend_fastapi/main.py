@@ -2,13 +2,18 @@ from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, Query
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import PickleType, create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func
+from sqlalchemy import PickleType, Text, create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
+from sqlalchemy.ext.mutable import Mutable
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.types import TypeDecorator
 from pydantic import BaseModel
 from typing import Annotated, List, Optional, Union
 import jwt
+import logging
+import json
 from jwt.exceptions import InvalidTokenError
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
@@ -63,7 +68,53 @@ attending_table = Table(
 class FriendCompressedProfile(BaseModel):
     username: str
     profile_image_src: str
-     
+
+class JSONEncodedDict(TypeDecorator):
+    "Represents an immutable structure as a json-encoded string."
+    impl = Text
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            try:
+                value = json.dumps(value)
+            except Exception as e:
+                logging.error('JSONEncodedDict: dump error %s' % e)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            try:
+                value = json.loads(value)
+            except Exception as e:
+                logging.error('JSONEncodedDict: load error %s' % e)
+        return value
+
+class MutableDict(Mutable, dict):
+    @classmethod
+    def coerce(cls, key, value):
+        "Convert plain dictionaries to MutableDict."
+
+        if not isinstance(value, MutableDict):
+            if isinstance(value, dict):
+                return MutableDict(value)
+
+            # this call will raise ValueError
+            return Mutable.coerce(key, value)
+        else:
+            return value
+
+    def __setitem__(self, key, value):
+        "Detect dictionary set events and emit change events."
+
+        dict.__setitem__(self, key, value)
+        self.changed()
+
+    def __delitem__(self, key):
+        "Detect dictionary del events and emit change events."
+
+        dict.__delitem__(self, key)
+        self.changed()
+
 # accounts table
 class Account(Base):
     __tablename__ = 'accounts'
@@ -80,7 +131,8 @@ class Account(Base):
     instagram = Column(String(100), unique=False, nullable=True)
     hosted_events = relationship('Event', back_populates='host')
     events = relationship('Event', back_populates='attendees')
-    friend_weights = Column(PickleType)
+    friend_weights: Mapped[dict[str, int]] = mapped_column(MutableDict.as_mutable(JSONEncodedDict))
+    # friend_weights = Column(MutableDict.as_mutable(PickleType))
 
     # Friend m2m relationship.
     # Database updates should maintatin symmetry.
@@ -145,7 +197,7 @@ class Event(Base):
 engine = create_engine(DATABASE_URL, echo=True)
 # engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
+Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 def get_db():
@@ -374,7 +426,7 @@ def register(user: UserIn, db: Session = Depends(get_db)):
     if existing_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username or email already exists!")
     else:
-        new_user = Account(username=user.username, password=get_password_hash(user.password), email=user.email)
+        new_user = Account(username=user.username, password=get_password_hash(user.password), email=user.email, friend_weights = {})
         db.add(new_user)
         db.commit()
         return JSONResponse(content={"message": "You have successfully registered!"})
@@ -409,7 +461,6 @@ def send_friend_request (friend_user: Account = Depends(get_user_from_usernameIn
         
         current_user.friend_weights[friend_user.username] = 1
         friend_user.friend_weights[current_user.username] = 1
-
         db.commit()
         return JSONResponse(content={"message": "Friend successfully added!"})
     # creates new friend request
@@ -644,9 +695,7 @@ def signup_for_event(event_id: int, current_user: Account = Depends(get_current_
     
     # increase friend weight for all friends also attending event.
     increment_friend_weights_by_event(current_user, event)
-
     db.commit()
-
     return {"message": "Signed up successfully"}
 
 """ Computes a recommendation weight for events and returns the top 3 events, if they exist.
@@ -670,9 +719,9 @@ def get_event_recommendation( current_user: Account = Depends(get_current_user),
 """ Updates the friend weights for each friend of the current user attending the event.
     The weights are incremented by 1, until they reach a maximum. """
 def increment_friend_weights_by_event(current_user: Account, event: Event):
-    attending_friends = [friend for friend in current_user.friends if friend in event.attendees]
+    attending_friends = [friend for friend in current_user.friends if friend in event.attendees or friend == event.host]
     for friend in attending_friends:
-        if (current_user[friend.username] < 5):
+        if (current_user.friend_weights[friend.username] < 5):
             current_user.friend_weights[friend.username] += 1
             friend.friend_weights[current_user.username] += 1
 
