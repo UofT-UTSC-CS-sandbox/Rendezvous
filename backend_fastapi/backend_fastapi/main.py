@@ -59,8 +59,8 @@ class FriendCompressedProfile(BaseModel):
 attending_table = Table(
     "attending_table",
     Base.metadata,
-    Column("account_id", ForeignKey("accounts.id"), primary_key=True),
-    Column("event_id", ForeignKey("events.id"), primary_key=True)
+    Column("account_id", Integer, ForeignKey("accounts.id"), primary_key=True),
+    Column("event_id", Integer, ForeignKey("events.id"), primary_key=True)
 )
 
 
@@ -140,7 +140,7 @@ class Event(Base):
     host_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
     host = relationship('Account', back_populates='hosted_events')
     attendees: Mapped[List["Account"]] = relationship(
-        secondary=attending_table, back_populates= "events"
+        secondary=attending_table, back_populates= "attending_events"
     )
 
 """ Table for account-event relationship. An 'edge' in this table exists if and only
@@ -330,7 +330,10 @@ class EventOut(BaseModel):
     description: str
     date: datetime
     host_id: int
-    attendees: list
+    attendees: List[UserOut]
+       
+    class Config:
+        from_attributes = True
 
 class UserUpdate(BaseModel):
     title: Optional[str]
