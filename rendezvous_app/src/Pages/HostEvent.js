@@ -78,7 +78,7 @@ const HostEvent = () => {
                         type="date"
                         name="date"
                         placeholder="Date"
-                        value={formData.date}
+                        value={formData.datetime}
                         onChange={handleChange}
                         style={{ padding: '0.5rem', width: '100%', maxWidth: '300px', borderRadius: '4px', border: '1px solid #ccc' }}
                     />

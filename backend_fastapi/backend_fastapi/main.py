@@ -2,7 +2,7 @@ from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, Query
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import PickleType, Text, create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func
+from sqlalchemy import PickleType, Text, create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func, ARRAY
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
@@ -61,8 +61,8 @@ friend_request_table = Table(
 attending_table = Table(
     "attending_table",
     Base.metadata,
-    Column("account_id", ForeignKey("accounts.id"), primary_key=True),
-    Column("event_id", ForeignKey("events.id"), primary_key=True)
+    Column("account_id", Integer, ForeignKey("accounts.id"), primary_key=True),
+    Column("event_id", Integer, ForeignKey("events.id"), primary_key=True)
 )
 
 class FriendCompressedProfile(BaseModel):
@@ -130,11 +130,13 @@ class Account(Base):
     twitter = Column(String(100), unique=False, nullable=True)
     instagram = Column(String(100), unique=False, nullable=True)
     hosted_events = relationship('Event', back_populates='host')
-    events = relationship('Event', back_populates='attendees')
+    attending_events: Mapped[List["Event"]] = relationship(
+        secondary=attending_table, back_populates= "attendees"
+    )
     friend_weights: Mapped[dict[str, int]] = mapped_column(MutableDict.as_mutable(JSONEncodedDict))
     # friend_weights = Column(MutableDict.as_mutable(PickleType))
-
-    # Friend m2m relationship.
+  
+  # Friend m2m relationship.
     # Database updates should maintatin symmetry.
     # primary and secondary join needed to distinguish
     # between the direction of relations.
@@ -181,6 +183,10 @@ class Account(Base):
         # Once profile feature is implemented, this should be changed.
         return FriendCompressedProfile(username = self.username, profile_image_src="https://www.w3schools.com/w3images/avatar2.png")     
 
+
+
+
+
 # events table
 class Event(Base):
     __tablename__ = 'events'
@@ -191,7 +197,7 @@ class Event(Base):
     host_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
     host = relationship('Account', back_populates='hosted_events')
     attendees: Mapped[List["Account"]] = relationship(
-        secondary=attending_table, back_populates= "events"
+        secondary=attending_table, back_populates= "attending_events"
     )
 
 engine = create_engine(DATABASE_URL, echo=True)
@@ -375,7 +381,10 @@ class EventOut(BaseModel):
     description: str
     date: datetime
     host_id: int
-
+    attendees: List[UserOut]
+       
+    class Config:
+        from_attributes = True
 
 class UserUpdate(BaseModel):
     title: Optional[str]
@@ -675,6 +684,31 @@ def get_hosted_events(
 async def get_events(db: Session = Depends(get_db)):
     events = db.query(Event).all()
     return events
+
+@app.post("/events/{event_id}/signup")
+def signup_for_event(event_id: int, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    # Check if the user is already signed up
+    if current_user in event.attendees:
+        raise HTTPException(status_code=400, detail="User already signed up for the event")
+
+    #Check if the host is signing up for the event
+    if current_user.id == event.host_id:
+        
+        raise HTTPException(status_code=400, detail="Host cannot sign up for the event!")
+
+
+
+    # Add the user to the event's attendees
+    event.attendees.append(current_user)
+    db.commit()
+
+    return {"message": "Signed up successfully"}
+
+
 
 @app.get("/events/{event_id}", response_model=EventOut)
 def get_event(event_id: int, db: Session = Depends(get_db)):
