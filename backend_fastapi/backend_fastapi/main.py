@@ -2,13 +2,18 @@ from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, Query
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func, ARRAY
+from sqlalchemy import PickleType, Text, create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func, ARRAY
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
+from sqlalchemy.ext.mutable import Mutable
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.types import TypeDecorator
 from pydantic import BaseModel
 from typing import Annotated, List, Optional, Union
 import jwt
+import logging
+import json
 from jwt.exceptions import InvalidTokenError
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
@@ -50,12 +55,9 @@ friend_request_table = Table(
     Column("right_friend_id", Integer, ForeignKey("accounts.id"), primary_key=True),
 )
 
-class FriendCompressedProfile(BaseModel):
-    username: str
-    profile_image_src: str
-
-
-
+""" Table for account-event relationship. An 'edge' in this table exists if and only
+    if the user (Account) has attended, or has accepted an invitation to attend, event (Event).
+"""
 attending_table = Table(
     "attending_table",
     Base.metadata,
@@ -63,7 +65,55 @@ attending_table = Table(
     Column("event_id", Integer, ForeignKey("events.id"), primary_key=True)
 )
 
+class FriendCompressedProfile(BaseModel):
+    username: str
+    profile_image_src: str
 
+class JSONEncodedDict(TypeDecorator):
+    "Represents an immutable structure as a json-encoded string."
+    impl = Text
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            try:
+                value = json.dumps(value)
+            except Exception as e:
+                logging.error('JSONEncodedDict: dump error %s' % e)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            try:
+                value = json.loads(value)
+            except Exception as e:
+                logging.error('JSONEncodedDict: load error %s' % e)
+        return value
+
+class MutableDict(Mutable, dict):
+    @classmethod
+    def coerce(cls, key, value):
+        "Convert plain dictionaries to MutableDict."
+
+        if not isinstance(value, MutableDict):
+            if isinstance(value, dict):
+                return MutableDict(value)
+
+            # this call will raise ValueError
+            return Mutable.coerce(key, value)
+        else:
+            return value
+
+    def __setitem__(self, key, value):
+        "Detect dictionary set events and emit change events."
+
+        dict.__setitem__(self, key, value)
+        self.changed()
+
+    def __delitem__(self, key):
+        "Detect dictionary del events and emit change events."
+
+        dict.__delitem__(self, key)
+        self.changed()
 
 # accounts table
 class Account(Base):
@@ -83,7 +133,10 @@ class Account(Base):
     attending_events: Mapped[List["Event"]] = relationship(
         secondary=attending_table, back_populates= "attendees"
     )
-    # Friend m2m relationship.
+    friend_weights: Mapped[dict[str, int]] = mapped_column(MutableDict.as_mutable(JSONEncodedDict))
+    # friend_weights = Column(MutableDict.as_mutable(PickleType))
+  
+  # Friend m2m relationship.
     # Database updates should maintatin symmetry.
     # primary and secondary join needed to distinguish
     # between the direction of relations.
@@ -118,6 +171,10 @@ class Account(Base):
         back_populates="friend_requests_recieved",
     )
 
+    events: Mapped[List["Event"]] = relationship(
+        secondary=attending_table, back_populates= "attendees"
+    )
+
     def __repr__(self) -> str:
         return f"Account(id={self.id!r}, email={self.email!r})"
     
@@ -143,19 +200,12 @@ class Event(Base):
         secondary=attending_table, back_populates= "attending_events"
     )
 
-""" Table for account-event relationship. An 'edge' in this table exists if and only
-    if the user (Account) has attended, or has accepted an invitation to attend, event (Event).
-"""
-
-
-
-
-
-
-
 engine = create_engine(DATABASE_URL, echo=True)
 # engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# The below line will drop all schemas. Uncomment it iff you are running for the first time after a change to one of the classes/relations.
+# Base.metadata.drop_all(bind=engine)
 
 Base.metadata.create_all(bind=engine)
 
@@ -308,10 +358,11 @@ class UserOut(BaseModel):
 
 class UsernameIn(BaseModel):
     username: str
-    """ Returns (first) user with matching username.
 
-        Throws HTTPException if no matching user exists.
-    """
+""" Returns (first) user with matching username.
+
+    Throws HTTPException if no matching user exists.
+"""
 def get_user_from_usernameIn(usernameIn: UsernameIn, db: Session = Depends(get_db)):
     user = get_user(db, usernameIn.username)
     if user == None:
@@ -387,7 +438,7 @@ def register(user: UserIn, db: Session = Depends(get_db)):
     if existing_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username or email already exists!")
     else:
-        new_user = Account(username=user.username, password=get_password_hash(user.password), email=user.email)
+        new_user = Account(username=user.username, password=get_password_hash(user.password), email=user.email, friend_weights = {})
         db.add(new_user)
         db.commit()
         return JSONResponse(content={"message": "You have successfully registered!"})
@@ -419,6 +470,9 @@ def send_friend_request (friend_user: Account = Depends(get_user_from_usernameIn
         friend_user.friend_requests_sent.remove(current_user)
         friend_user.friends.append(current_user)
         current_user.friends.append(friend_user)
+        
+        current_user.friend_weights[friend_user.username] = 1
+        friend_user.friend_weights[current_user.username] = 1
         db.commit()
         return JSONResponse(content={"message": "Friend successfully added!"})
     # creates new friend request
@@ -451,6 +505,8 @@ def remove_friend (friend_user: Account = Depends(get_user_from_usernameIn),
                 db: Session = Depends(get_db)):
     current_user.friends.remove(friend_user)
     friend_user.friends.remove(current_user)
+    current_user.friend_weights.pop(friend_user.username)
+    friend_user.friend_weights.pop(current_user.username)
     db.commit()
     return JSONResponse(content={"message": "Friend removed."})
 
@@ -660,6 +716,51 @@ def get_event(event_id: int, db: Session = Depends(get_db)):
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
     return event
+
+@app.post("/events/{event_id}/signup")
+def signup_for_event(event_id: int, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    # Check if the user is already signed up
+    if current_user in event.attendees:
+        raise HTTPException(status_code=400, detail="User already signed up for the event")
+
+    # Add the user to the event's attendees
+    event.attendees.append(current_user)
+    
+    # increase friend weight for all friends also attending event.
+    increment_friend_weights_by_event(current_user, event)
+    db.commit()
+    return {"message": "Signed up successfully"}
+
+""" Computes a recommendation weight for events and returns the top 3 events, if they exist.
+    Generally, the score depends on the number of friends attending the event, and on
+    the existing relationship between those friends and the current user (which
+    includes the number of events they have attended in the past).
+"""
+@app.post("/eventrecommendation")
+def get_event_recommendation( current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    events = {}
+    for friend in current_user.friends:
+        for event in friend.events:
+            if event in events.keys():
+                events[event] += current_user.friend_weights[friend.username]
+            else:
+                events[event] = current_user.friend_weights[friend.username]
+    # events now maps events to their aggregate weight
+    # we sort events by their aggregate score, and return the top 3 events, if they exist.
+    return list(dict(sorted(events.items(), key = lambda x: x[0], reverse = True)[:3]).keys())
+
+""" Updates the friend weights for each friend of the current user attending the event.
+    The weights are incremented by 1, until they reach a maximum. """
+def increment_friend_weights_by_event(current_user: Account, event: Event):
+    attending_friends = [friend for friend in current_user.friends if friend in event.attendees or friend == event.host]
+    for friend in attending_friends:
+        if (current_user.friend_weights[friend.username] < 5):
+            current_user.friend_weights[friend.username] += 1
+            friend.friend_weights[current_user.username] += 1
 
 if __name__ == '__main__':
     import uvicorn
