@@ -6,6 +6,7 @@ import pfpplaceholder from './images/stickmanpfp.png';
 import RecentHostedEvents from "../components/RecentEvents/recenthostedevents";
 import RecentAttendedEvents from "../components/RecentEvents/recentattendedevents";
 import EventPopup from "../components/RecentEvents/eventpopup";
+import AttendedEventPopup from "../components/RecentEvents/attendedeventpopup";
 
 const Profile = () => {
   // useState for default profile data
@@ -21,6 +22,7 @@ const Profile = () => {
   });
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isAttendedPopupOpen, setIsAttendedPopupOpen] = useState(false);
 
   //functions for handling opening/closing the pop-up for all hosted events
   const handleOpenPopup = () => {
@@ -125,6 +127,9 @@ const Profile = () => {
             <div className="profile-attended">
               <span className="events-attended">
                 <span>Events Attended</span>
+                <button className="view-events-btn" onClick={() => setIsAttendedPopupOpen(true)}>
+                  All Attended Events
+                </button>
                 {profileData.id && (
                   <div>
                     <RecentAttendedEvents accountId={profileData.id} />
@@ -147,10 +152,16 @@ const Profile = () => {
               {/* The all hosted events pop-up section is here */}
             </div>
             <EventPopup
-            isOpen={isPopupOpen}
-            onClose={handleClosePopup}
-            accountId={profileData.id}
-          />
+              isOpen={isPopupOpen}
+              onClose={handleClosePopup}
+              accountId={profileData.id}
+            />
+            {/* Popup for attended events */}
+            <AttendedEventPopup
+              isOpen={isAttendedPopupOpen}
+              onClose={() => setIsAttendedPopupOpen(false)}
+              accountId={profileData.id}
+            />
           </div>
         </div>
       </div>
