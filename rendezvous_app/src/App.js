@@ -17,6 +17,7 @@ import Login from "./Pages/login";
 import Register from "./Pages/register";
 import Profile from "./Pages/profile";
 import EventDetails from './Pages/event-details'
+import EventCreation from "./Pages/event-creation";
 import HostEvent from "./Pages/HostEvent";
 import EventSignup from "./Pages/EventSignup";
 import PrivateRoute from "./PrivateRoute";
@@ -44,6 +45,7 @@ const App = () => {
                         <Route path="/friendrequestsrecieved" element={<FriendRequestsRecieved />} />
                         <Route path="/friendrequestssent" element={<FriendRequestsSent />} />
                         <Route path="/event-details" element={<EventDetails />} />
+                        <Route path="/event-creation" element={<EventCreation />} />
                     </>
                 ) : (
                     <Route element={<PrivateRoute/>}>
@@ -55,6 +57,7 @@ const App = () => {
                         <Route path="/friendrequestsrecieved" element={<FriendRequestsRecieved />} />
                         <Route path="/friendrequestssent" element={<FriendRequestsSent />} />
                         <Route path="/event-details" element={<EventDetails />} />
+                        <Route path="/event-creation" element={<EventCreation />} />
                     </Route>
                 )}
                 <Route
