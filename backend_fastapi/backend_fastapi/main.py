@@ -201,7 +201,7 @@ engine = create_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # The below line will drop all schemas. Uncomment it iff you are running for the first time after a change to one of the classes/relations.
-# Base.metadata.drop_all(bind=engine)
+Base.metadata.drop_all(bind=engine)
 
 Base.metadata.create_all(bind=engine)
 
@@ -772,7 +772,7 @@ def get_event_recommendation( current_user: Account = Depends(get_current_user),
                 events[event] = current_user.friend_weights[friend.username]
     # events now maps events to their aggregate weight
     # we sort events by their aggregate score, and return the top 3 events, if they exist.
-    return list(dict(sorted(events.items(), key = lambda x: x[0], reverse = True)[:3]).keys())
+    return list(dict(sorted(events.items(), key = lambda x: x[1], reverse = True)[:3]).keys())
 
 """ Updates the friend weights for each friend of the current user attending the event.
     The weights are incremented by 1, until they reach a maximum. """
