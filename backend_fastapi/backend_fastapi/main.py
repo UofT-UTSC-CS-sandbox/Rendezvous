@@ -171,10 +171,6 @@ class Account(Base):
         back_populates="friend_requests_recieved",
     )
 
-    events: Mapped[List["Event"]] = relationship(
-        secondary=attending_table, back_populates= "attendees"
-    )
-
     def __repr__(self) -> str:
         return f"Account(id={self.id!r}, email={self.email!r})"
     
@@ -731,31 +727,6 @@ async def get_events(db: Session = Depends(get_db)):
     events = db.query(Event).all()
     return events
 
-@app.post("/events/{event_id}/signup")
-def signup_for_event(event_id: int, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
-    event = db.query(Event).filter(Event.id == event_id).first()
-    if not event:
-        raise HTTPException(status_code=404, detail="Event not found")
-
-    # Check if the user is already signed up
-    if current_user in event.attendees:
-        raise HTTPException(status_code=400, detail="User already signed up for the event")
-
-    #Check if the host is signing up for the event
-    if current_user.id == event.host_id:
-        
-        raise HTTPException(status_code=400, detail="Host cannot sign up for the event!")
-
-
-
-    # Add the user to the event's attendees
-    event.attendees.append(current_user)
-    db.commit()
-
-    return {"message": "Signed up successfully"}
-
-
-
 @app.get("/events/{event_id}", response_model=EventOut)
 def get_event(event_id: int, db: Session = Depends(get_db)):
     event = db.query(Event).filter(Event.id == event_id).first()
@@ -772,6 +743,10 @@ def signup_for_event(event_id: int, current_user: Account = Depends(get_current_
     # Check if the user is already signed up
     if current_user in event.attendees:
         raise HTTPException(status_code=400, detail="User already signed up for the event")
+    
+    #Check if the host is signing up for the event
+    if current_user.id == event.host_id:
+        raise HTTPException(status_code=400, detail="Host cannot sign up for the event!")
 
     # Add the user to the event's attendees
     event.attendees.append(current_user)
@@ -790,7 +765,7 @@ def signup_for_event(event_id: int, current_user: Account = Depends(get_current_
 def get_event_recommendation( current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
     events = {}
     for friend in current_user.friends:
-        for event in friend.events:
+        for event in friend.attending_events:
             if event in events.keys():
                 events[event] += current_user.friend_weights[friend.username]
             else:
