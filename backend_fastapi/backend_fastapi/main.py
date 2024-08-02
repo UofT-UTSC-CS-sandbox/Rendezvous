@@ -639,6 +639,13 @@ def signup_for_event(event_id: int, current_user: Account = Depends(get_current_
     if current_user in event.attendees:
         raise HTTPException(status_code=400, detail="User already signed up for the event")
 
+    #Check if the host is signing up for the event
+    if current_user.id == event.host_id:
+        
+        raise HTTPException(status_code=400, detail="Host cannot sign up for the event!")
+
+
+
     # Add the user to the event's attendees
     event.attendees.append(current_user)
     db.commit()
