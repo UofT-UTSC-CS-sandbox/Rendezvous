@@ -39,3 +39,9 @@
     border-radius: 5px;
     cursor: pointer;
   }
+
+  .friend-buttons{
+    display: flex;
+    gap: var(--dl-space-space-unit);
+    align-self: center;
+  }

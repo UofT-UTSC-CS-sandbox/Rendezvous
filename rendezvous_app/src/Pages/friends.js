@@ -40,12 +40,12 @@ const Friends = () => {
     <div>
       <div className='centerstyle'>
         <h1 className='Friends-list-header'>My Friends</h1>
-        <div style={{ marginBottom: '20px' }}>
+        <div className='friend-buttons'style={{ marginBottom: '20px' }}>
           <button className='addFriendBtn' onClick={handleAddFriendClick}>
             <h3>+ Add Friend</h3>
           </button>
           <button className='friendRequestsBtn' onClick={handleSeeFriendRequestsRecievedClick}>
-            <h3>Friend Requests Recieved</h3>
+            <h3>Friend Requests Received</h3>
           </button>
           <button className='friendSentBtn' onClick={handleSeeFriendRequestsSentClick}>
             <h3>Friend Requests Sent</h3>
