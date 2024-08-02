@@ -2,7 +2,7 @@ from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, Query
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func
+from sqlalchemy import PickleType, create_engine, Column, Integer, String, Date, LargeBinary, Table, ForeignKey, func
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
@@ -80,6 +80,7 @@ class Account(Base):
     instagram = Column(String(100), unique=False, nullable=True)
     hosted_events = relationship('Event', back_populates='host')
     events = relationship('Event', back_populates='attendees')
+    friend_weights = Column(PickleType)
 
     # Friend m2m relationship.
     # Database updates should maintatin symmetry.
@@ -296,10 +297,11 @@ class UserOut(BaseModel):
 
 class UsernameIn(BaseModel):
     username: str
-    """ Returns (first) user with matching username.
 
-        Throws HTTPException if no matching user exists.
-    """
+""" Returns (first) user with matching username.
+
+    Throws HTTPException if no matching user exists.
+"""
 def get_user_from_usernameIn(usernameIn: UsernameIn, db: Session = Depends(get_db)):
     user = get_user(db, usernameIn.username)
     if user == None:
@@ -404,6 +406,10 @@ def send_friend_request (friend_user: Account = Depends(get_user_from_usernameIn
         friend_user.friend_requests_sent.remove(current_user)
         friend_user.friends.append(current_user)
         current_user.friends.append(friend_user)
+        
+        current_user.friend_weights[friend_user.username] = 1
+        friend_user.friend_weights[current_user.username] = 1
+
         db.commit()
         return JSONResponse(content={"message": "Friend successfully added!"})
     # creates new friend request
@@ -436,6 +442,8 @@ def remove_friend (friend_user: Account = Depends(get_user_from_usernameIn),
                 db: Session = Depends(get_db)):
     current_user.friends.remove(friend_user)
     friend_user.friends.remove(current_user)
+    current_user.friend_weights.pop(friend_user.username)
+    friend_user.friend_weights.pop(current_user.username)
     db.commit()
     return JSONResponse(content={"message": "Friend removed."})
 
@@ -620,6 +628,53 @@ def get_event(event_id: int, db: Session = Depends(get_db)):
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
     return event
+
+@app.post("/events/{event_id}/signup")
+def signup_for_event(event_id: int, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    # Check if the user is already signed up
+    if current_user in event.attendees:
+        raise HTTPException(status_code=400, detail="User already signed up for the event")
+
+    # Add the user to the event's attendees
+    event.attendees.append(current_user)
+    
+    # increase friend weight for all friends also attending event.
+    increment_friend_weights_by_event(current_user, event)
+
+    db.commit()
+
+    return {"message": "Signed up successfully"}
+
+""" Computes a recommendation weight for events and returns the top 3 events, if they exist.
+    Generally, the score depends on the number of friends attending the event, and on
+    the existing relationship between those friends and the current user (which
+    includes the number of events they have attended in the past).
+"""
+@app.post("/eventrecommendation")
+def get_event_recommendation( current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    events = {}
+    for friend in current_user.friends:
+        for event in friend.events:
+            if event in events.keys():
+                events[event] += current_user.friend_weights[friend.username]
+            else:
+                events[event] = current_user.friend_weights[friend.username]
+    # events now maps events to their aggregate weight
+    # we sort events by their aggregate score, and return the top 3 events, if they exist.
+    return list(dict(sorted(events.items(), key = lambda x: x[0], reverse = True)[:3]).keys())
+
+""" Updates the friend weights for each friend of the current user attending the event.
+    The weights are incremented by 1, until they reach a maximum. """
+def increment_friend_weights_by_event(current_user: Account, event: Event):
+    attending_friends = [friend for friend in current_user.friends if friend in event.attendees]
+    for friend in attending_friends:
+        if (current_user[friend.username] < 5):
+            current_user.friend_weights[friend.username] += 1
+            friend.friend_weights[current_user.username] += 1
 
 if __name__ == '__main__':
     import uvicorn
