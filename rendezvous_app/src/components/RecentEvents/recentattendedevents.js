@@ -6,6 +6,7 @@ const RecentAttendedEvents = ({ accountId }) => {
     const [events, setEvents] = useState([]);
     const [error, setError] = useState(null);
 
+    // useEffect to get the 3 events a user has signed up for that are happening the soonest
     useEffect(() => {
         const fetchEvents = async () => {
             try {
@@ -29,6 +30,7 @@ const RecentAttendedEvents = ({ accountId }) => {
         return <div>{error}</div>;
     }
 
+    // displayed component's code is here
     return (
         <div className="event-container">
             {events.map(event => (

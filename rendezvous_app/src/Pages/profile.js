@@ -21,16 +21,16 @@ const Profile = () => {
     pfp: null,
   });
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isHostedPopupOpen, setIsHostedPopupOpen] = useState(false);
   const [isAttendedPopupOpen, setIsAttendedPopupOpen] = useState(false);
 
   //functions for handling opening/closing the pop-up for all hosted events
   const handleOpenPopup = () => {
-    setIsPopupOpen(true);
+    setIsHostedPopupOpen(true);
   };
 
   const handleClosePopup = () => {
-    setIsPopupOpen(false);
+    setIsHostedPopupOpen(false);
   };
 
   // useEffect to retrieve the user's profile data from database
@@ -152,7 +152,7 @@ const Profile = () => {
               {/* The all hosted events pop-up section is here */}
             </div>
             <EventPopup
-              isOpen={isPopupOpen}
+              isOpen={isHostedPopupOpen}
               onClose={handleClosePopup}
               accountId={profileData.id}
             />
