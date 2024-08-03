@@ -65,10 +65,17 @@ attending_table = Table(
     Column("event_id", Integer, ForeignKey("events.id"), primary_key=True)
 )
 
+""" Class representing friend profile data. This is information
+    that is neccessary to display friends in the UI. """
 class FriendCompressedProfile(BaseModel):
     username: str
     profile_image_src: str
 
+""" Class representing an immutable structure as a json-encoded string.
+    This is neccessary to store friend weights, as a dictionary
+    in the database. 
+    
+    This code is provided in the documentation of SQLalchemy. """
 class JSONEncodedDict(TypeDecorator):
     "Represents an immutable structure as a json-encoded string."
     impl = Text
@@ -89,6 +96,11 @@ class JSONEncodedDict(TypeDecorator):
                 logging.error('JSONEncodedDict: load error %s' % e)
         return value
 
+""" Class representing a mutatable dictionary.
+    This is neccessary to store friend weights, as a dictionary
+    in the database (PickleType, dict, etc. are not mutable by default). 
+    
+    This code is provided in the documentation of SQLalchemy. """
 class MutableDict(Mutable, dict):
     @classmethod
     def coerce(cls, key, value):
@@ -115,7 +127,10 @@ class MutableDict(Mutable, dict):
         dict.__delitem__(self, key)
         self.changed()
 
-# accounts table
+""" Account table representing users.
+    Account stores relations representing hosted and attended events,
+    aswell as friends and friend requests.
+    Additionally, Accounts store supplemental fields. """
 class Account(Base):
     __tablename__ = 'accounts'
     id = Column(Integer, primary_key=True)
@@ -201,7 +216,7 @@ engine = create_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # The below line will drop all schemas. Uncomment it iff you are running for the first time after a change to one of the classes/relations.
-Base.metadata.drop_all(bind=engine)
+# Base.metadata.drop_all(bind=engine)
 
 Base.metadata.create_all(bind=engine)
 
@@ -362,12 +377,23 @@ class UserOut(BaseModel):
     class Config:
         from_attributes = True
 
+""" Class representing username input JSON.
+    Of the form: {username: str}.
+"""
 class UsernameIn(BaseModel):
     username: str
 
 """ Returns (first) user with matching username.
 
-    Throws HTTPException if no matching user exists.
+    Args:
+        usernameIn: UsernameIn. User username.
+        db: Session. Database session dependency.
+
+    Returns:
+        None.
+
+    Raises:
+        HTTPException: Raises HTTP 400 error if username does not correspond to user.
 """
 def get_user_from_usernameIn(usernameIn: UsernameIn, db: Session = Depends(get_db)):
     user = get_user(db, usernameIn.username)
@@ -458,12 +484,19 @@ def register(user: UserIn, db: Session = Depends(get_db)):
     calling user, the users are added as friends.
     Otherwise, sends a friend request.
 
-    Throws HTTPException if:
+    Args:
+        friend_user: Account. Recieved from username input. The friend account. 
+        current_user: Account. The user account requesting an event recommendation list.
+        db: Session. Database session.
+    Throws:
+        Throws HTTPException if:
         - friend does not exist
         - authentication for current user fails
         - current user is attempting to add themselves as a friend
         - friend is already friends with the current user.
-        - the current user has already sent a friend request to friend. """
+        - the current user has already sent a friend request to friend.
+    Returns:
+        JSONResponse. Success/failure message. """
 @app.post("/sendfriendrequest")
 def send_friend_request (friend_user: Account = Depends(get_user_from_usernameIn),
                 current_user: Account = Depends(get_current_user),
@@ -491,9 +524,16 @@ def send_friend_request (friend_user: Account = Depends(get_user_from_usernameIn
 
 """ Denies existing friend request to the current user from the friend_user.
 
-    Throws HTTPException if:
-        - friend does not exist
-        - authentication for current user fails """
+    Args:
+        friend_user: Account. Recieved from username input. The friend account. 
+        current_user: Account. The user account requesting an event recommendation list.
+        db: Session. Database session.
+    Throws:
+        Throws HTTPException if:
+        - friend does not exist.
+        - authentication for current user fails.
+    Returns:
+        JSONResponse. Success/failure message."""
 @app.post("/denyfriendrequest")
 def deny_friend_request (friend_user: Account = Depends(get_user_from_usernameIn),
                 current_user: Account = Depends(get_current_user),
@@ -505,9 +545,16 @@ def deny_friend_request (friend_user: Account = Depends(get_user_from_usernameIn
 """ Removes friend with matching username from friends list for
     the current user.
 
-    Throws HTTPException if:
-        - friend does not exist
-        - authentication for current user fails. """
+    Args:
+        friend_user: Account. Recieved from username input. The friend account. 
+        current_user: Account. The user account requesting an event recommendation list.
+        db: Session. Database session.
+    Throws:
+        Throws HTTPException if:
+        - friend does not exist.
+        - authentication for current user fails.
+    Returns:
+        JSONResponse. Success/failure message. """
 @app.post("/removefriend")
 def remove_friend (friend_user: Account = Depends(get_user_from_usernameIn),
                 current_user: Account = Depends(get_current_user),
@@ -520,10 +567,17 @@ def remove_friend (friend_user: Account = Depends(get_user_from_usernameIn),
     return JSONResponse(content={"message": "Friend removed."})
 
 """ Denies existing friend request to the current user from the friend_user.
-
-    Throws HTTPException if:
+    
+    Args:
+        friend_user: Account. Recieved from username input. The friend account. 
+        current_user: Account. The user account requesting an event recommendation list.
+        db: Session. Database session.
+    Throws:
+        Throws HTTPException if:
         - friend does not exist.
-        - authentication for current user fails. """
+        - authentication for current user fails.
+    Returns:
+        JSONResponse. Success/failure message."""
 @app.post("/cancelfriendrequest")
 def remove_friend (friend_user: Account = Depends(get_user_from_usernameIn),
                 current_user: Account = Depends(get_current_user),
@@ -539,9 +593,16 @@ def remove_friend (friend_user: Account = Depends(get_user_from_usernameIn),
     friend user should have sent friend request to current user.
     Otherwise, this will simply sent a friend request to the friend_user.
 
-    Throws HTTPException if:
+    Args:
+        friend_user: Account. Recieved from username input. The friend account. 
+        current_user: Account. The user account requesting an event recommendation list.
+        db: Session. Database session.
+    Throws:
+        Throws HTTPException if:
         - friend does not exist.
-        - authentication for current user fails. """
+        - authentication for current user fails.
+    Returns:
+        JSONResponse. Success/failure message. """
 @app.post("/addfriend")
 def add_friend (friend_user: Account = Depends(get_user_from_usernameIn),
                 current_user: Account = Depends(get_current_user),
@@ -550,21 +611,39 @@ def add_friend (friend_user: Account = Depends(get_user_from_usernameIn),
 
 """ Returns a json array of the current user's friends.
 
-    Throws HTTPException if authentication fails. """
+    Args:
+        current_user: Account. The user account.
+        db: Session. Database session.
+    Throws:
+        HTTPException 400 if authentication fails.
+    Returns:
+        List(FriendCompressedProfile). A list of friend profiles. """
 @app.post("/friends", response_model=List[FriendCompressedProfile])
 def get_friends(current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
     return [friend_account.toFriendCompressedProfile() for friend_account in current_user.friends]
 
 """ Returns a json array of the current user's sent friend requests.
 
-    Throws HTTPException if authentication fails. """
+    Args:
+        current_user: Account. The user account.
+        db: Session. Database session.
+    Throws:
+        HTTPException 400 if authentication fails.
+    Returns:
+        List(FriendCompressedProfile). A list of friend profiles. """
 @app.post("/friendrequestssent", response_model=List[FriendCompressedProfile])       
 def get_friend_requests_sent(current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
     return [friend_account.toFriendCompressedProfile() for friend_account in current_user.friend_requests_sent]
 
 """ Returns a json array of the current user's recieved friend requests.
 
-    Throws HTTPException if authentication fails. """
+    Args:
+        current_user: Account. The user account.
+        db: Session. Database session.
+    Throws:
+        HTTPException 400 if authentication fails.
+    Returns:
+        List(FriendCompressedProfile). A list of friend profiles. """
 @app.post("/friendrequestsrecieved", response_model=List[FriendCompressedProfile])  
 def get_friend_requests_recieved(current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
     return [friend_account.toFriendCompressedProfile() for friend_account in current_user.friend_requests_recieved]
@@ -818,6 +897,14 @@ def signup_for_event(event_id: int, current_user: Account = Depends(get_current_
     Generally, the score depends on the number of friends attending the event, and on
     the existing relationship between those friends and the current user (which
     includes the number of events they have attended in the past).
+    Events that the user is hosting, or is already signedup for are NOT candidates
+    for recommendation.
+
+    Args:
+        current_user: Account. The user account requesting an event recommendation list.
+        db: Session. Database session.
+    Returns:
+        List(Event). A list of event recommendations.
 """
 @app.post("/eventrecommendation")
 def get_event_recommendation( current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
