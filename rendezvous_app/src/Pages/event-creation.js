@@ -20,6 +20,9 @@ const [events, setEvents] = useState([]);
 const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 };
+const handleCancel = () => {
+  navigate('/HostEvent');
+};
 
 const handleSubmit = async (e) => {
     e.preventDefault();
@@ -97,10 +100,8 @@ const handleSubmit = async (e) => {
             Create
           </button>
 
-          <button className="event-creation-navlink button">
-          <Link to="/HostEvent">
+          <button className="event-creation-navlink button" onClick={handleCancel}>
             Cancel
-          </Link>
           </button>
             </div>
           

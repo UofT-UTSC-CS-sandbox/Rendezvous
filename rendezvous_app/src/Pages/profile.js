@@ -125,24 +125,33 @@ const Profile = () => {
           </div>
           <div className="profile-all-events-container">
             <div className="profile-attended">
-              <span className="events-attended">
-                <span>Events Attended</span>
-                <button className="view-events-btn" onClick={() => setIsAttendedPopupOpen(true)}>
+              
+                <div className="attended-top">
+                  <span className="events-attended">Events Attended</span>
+                  <button className="view-events-btn" onClick={() => setIsAttendedPopupOpen(true)}>
                   See All
-                </button>
+                  </button>
+                </div>
+                
+                <span className="events-listed">
                 {profileData.id && (
                   <div>
                     <RecentAttendedEvents accountId={profileData.id} />
                   </div>
                 )}
                 </span>
+              
             </div>
             <div className="profile-hosted">
-              <span className="events-hosted">
-                <span>Events Hosted</span>
+            
+            <div className="attended-top">
+            <span className="events-attended">Events Hosted</span>
                 <button className="view-events-btn" onClick={handleOpenPopup}>
                   See All
                 </button>
+              </div>
+
+              <span className="events-listed">
                 {profileData.id && (
                   <div>
                     <RecentHostedEvents accountId={profileData.id} />

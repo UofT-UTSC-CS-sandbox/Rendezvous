@@ -253,9 +253,10 @@
   color: var(--dl-color-theme-secondary1);
   border: none;
   padding: 10px 15px;
-  margin-left: 120px;
   cursor: pointer;
   border-radius: 4px;
+  display: flex;
+  justify-content: flex-end; /* Align the button to the right */
 }
 
 .view-events-btn:hover {
@@ -279,11 +280,25 @@
 }
 
 .events-attended {
+  font-size: 24px;
+  font-style: normal;
+  font-family: "Bricolage Grotesque";
+  font-weight: 700;
+}
+
+.events-listed {
   width: 100%;
   font-size: 24px;
   font-style: normal;
   font-family: "Bricolage Grotesque";
   font-weight: 700;
+}
+
+.attended-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .profile-hosted {
