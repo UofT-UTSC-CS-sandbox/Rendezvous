@@ -201,7 +201,7 @@ engine = create_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # The below line will drop all schemas. Uncomment it iff you are running for the first time after a change to one of the classes/relations.
-# Base.metadata.drop_all(bind=engine)
+Base.metadata.drop_all(bind=engine)
 
 Base.metadata.create_all(bind=engine)
 
@@ -823,7 +823,8 @@ def signup_for_event(event_id: int, current_user: Account = Depends(get_current_
 def get_event_recommendation( current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
     events = {}
     for friend in current_user.friends:
-        for event in set().union(friend.attending_events, friend.hosted_events):
+        for event in set().union(friend.attending_events,friend.hosted_events).difference(
+                current_user.attending_events, current_user.hosted_events):
             if event in events.keys():
                 events[event] += current_user.friend_weights[friend.username]
             else:
