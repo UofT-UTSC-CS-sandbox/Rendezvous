@@ -629,6 +629,19 @@ async def get_events(db: Session = Depends(get_db)):
     events = db.query(Event).all()
     return events
 
+"""
+Endpoint that handles signing up for an event.
+
+
+arguments:
+    event_id (int): The unique ID of the event that exists in the database. Refers to the event that the user has clicked on from the event list.
+    current_user (Account): The user's current account to access details like account_id.
+    db (Session): Database session dependency
+Returns: 
+    message: Displays the message on the website depending on case outcome.
+
+"""
+
 @app.post("/events/{event_id}/signup")
 def signup_for_event(event_id: int, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
     event = db.query(Event).filter(Event.id == event_id).first()
