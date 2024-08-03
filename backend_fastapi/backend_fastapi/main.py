@@ -149,7 +149,6 @@ class Account(Base):
         secondary=attending_table, back_populates= "attendees"
     )
     friend_weights: Mapped[dict[str, int]] = mapped_column(MutableDict.as_mutable(JSONEncodedDict))
-    # friend_weights = Column(MutableDict.as_mutable(PickleType))
   
   # Friend m2m relationship.
     # Database updates should maintatin symmetry.
