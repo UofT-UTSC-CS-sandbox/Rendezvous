@@ -80,7 +80,7 @@ const EventSignup = (props) => {
           <div className="contact-form3-section-title thq-card">
             <div className="contact-form3-content1">
               <h1 className="thq-heading-2">{event.title}</h1>
-              <span className="thq-body-small">{hostName}</span>
+              <span className="thq-body-small">Hosted By: {hostName}</span>
             </div>
           </div>
           <div className="contact-form3-section-title1 thq-card">
@@ -110,7 +110,7 @@ const EventSignup = (props) => {
               <p className="contact14-text1 thq-body-large">{event.date}</p>
             </div>
             <span className="contact14-email thq-body-small">
-              {props.email10}
+              
             </span>
           </div>
         </div>
@@ -126,7 +126,7 @@ const EventSignup = (props) => {
               <p className="contact14-text3 thq-body-large">{props.content20}</p>
             </div>
             <span className="contact14-email1 thq-body-small">
-              {props.link10}
+              
             </span>
           </div>
         </div>
