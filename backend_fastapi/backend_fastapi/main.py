@@ -870,6 +870,18 @@ def get_event(event_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Event not found")
     return event
 
+# retrieve the host account based on host_id 
+@app.get("/accounts/{hostId}", response_model = UserOut)
+async def get_host(hostId: int, db: Session = Depends(get_db)):
+    
+    host = db.query(Account).filter(Account.id == hostId).first()
+    if not host:
+        raise HTTPException(status_code = 404, detail = "Host not found")
+    return host
+
+
+
+
 @app.post("/events/{event_id}/signup")
 def signup_for_event(event_id: int, current_user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
     event = db.query(Event).filter(Event.id == event_id).first()

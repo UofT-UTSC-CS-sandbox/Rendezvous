@@ -9,7 +9,7 @@ import './event-details.css'
 const EventSignup = (props) => {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
-
+  const [hostName, setHostName] = useState('');
   useEffect(() => {
     // Fetch event details from the API
     fetchEventDetails();
@@ -19,8 +19,18 @@ const EventSignup = (props) => {
     try {
       const response = await BackendApi.get(`/events/${id}`);
       setEvent(response.data);
+      fetchHostDetails(response.data.host_id);
     } catch (error) {
       console.error('Error fetching event details:', error);
+    }
+  };
+
+  const fetchHostDetails = async (hostId) => {
+    try {
+      const response = await BackendApi.get(`/accounts/${hostId}`);
+      setHostName(response.data.username);
+    } catch (error) {
+      console.error('Error fetching host details:', error);
     }
   };
 
@@ -70,7 +80,7 @@ const EventSignup = (props) => {
           <div className="contact-form3-section-title thq-card">
             <div className="contact-form3-content1">
               <h1 className="thq-heading-2">{event.title}</h1>
-              <span className="thq-body-small">{event.host_id}</span>
+              <span className="thq-body-small">{hostName}</span>
             </div>
           </div>
           <div className="contact-form3-section-title1 thq-card">
