@@ -1,0 +1,47 @@
+.Friends-list-header {
+    font-size: 35px;
+    font-family: Bricolage Grotesque;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  
+  .centerstyle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .addFriendBtn {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: var(--dl-color-theme-primary2);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .friendRequestsBtn {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: var(--dl-color-theme-primary2);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .friendSentBtn {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: var(--dl-color-theme-primary2);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .friend-buttons{
+    display: flex;
+    gap: var(--dl-space-space-unit);
+    align-self: center;
+  }

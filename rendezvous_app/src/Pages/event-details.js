@@ -6,13 +6,16 @@ import { Helmet } from 'react-helmet'
 
 import './event-details.css'
 
-const EventSignup = (props) => {
+const EventDetails = (props) => {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
-  const [hostName, setHostName] = useState('');
+  const [host, setHost] = useState(null);
+
+
   useEffect(() => {
     // Fetch event details from the API
     fetchEventDetails();
+
   }, [id]);
 
   const fetchEventDetails = async () => {
@@ -28,40 +31,29 @@ const EventSignup = (props) => {
   const fetchHostDetails = async (hostId) => {
     try {
       const response = await BackendApi.get(`/accounts/${hostId}`);
-      setHostName(response.data.username);
+      setHost(response.data);
     } catch (error) {
       console.error('Error fetching host details:', error);
     }
   };
 
+
+
+
   const handleSignUp = async () => {
     try {
-        const response = await BackendApi.post(`/events/${id}/signup`, {
-            // Add necessary headers and body
-        });
-        console.log('Response:', response.data);
-        alert('Successfully signed up for the event!');
+      const response = await BackendApi.post(`/events/${id}/signup`, {
+        // Add necessary headers and body
+      });
+      console.log('Response:', response.data);
+      alert('Successfully signed up for the event!');
     } catch (error) {
-        if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            console.error('Error response:', error.response);
-            const errorMessage = error.response.data.detail;
-            alert(errorMessage);
-        } else if (error.request) {
-            // The request was made but no response was received
-            console.error('Error request:', error.request);
-            alert('Failed to sign up for the event: No response from server');
-        } else {
-            // Something happened in setting up the request that triggered an Error
-            console.error('Error message:', error.message);
-            alert('Failed to sign up for the event: ' + error.message);
-        }
+      console.error('Error signing up for event:', error);
+      alert('Failed to sign up for the event');
     }
-};
+  };
 
-
-  if (!event) return <div>Loading...</div>;
+  //if (!event) return <div>Loading...</div>;
 
   return (
     <div className="event-details-container2">
@@ -80,13 +72,13 @@ const EventSignup = (props) => {
           <div className="contact-form3-section-title thq-card">
             <div className="contact-form3-content1">
               <h1 className="thq-heading-2">{event.title}</h1>
-              <span className="thq-body-small">Hosted By: {hostName}</span>
+              <span className="thq-body-small">{host.username}</span>
             </div>
           </div>
           <div className="contact-form3-section-title1 thq-card">
-            <div className="contact-form3-content1">
-              <h2 className="thq-heading-3">{props.heading}</h2>
-              <span className="thq-body-small">{event.description}</span>
+            <div className="contact-form3-content2">
+              <h2>{props.heading}</h2>
+              <span>{event.description}</span>
             </div>
           </div>
           <button type="button" onClick={handleSignUp} className="contact-form3-button button">
@@ -110,7 +102,7 @@ const EventSignup = (props) => {
               <p className="contact14-text1 thq-body-large">{event.date}</p>
             </div>
             <span className="contact14-email thq-body-small">
-              
+              {props.email10}
             </span>
           </div>
         </div>
@@ -126,7 +118,7 @@ const EventSignup = (props) => {
               <p className="contact14-text3 thq-body-large">{props.content20}</p>
             </div>
             <span className="contact14-email1 thq-body-small">
-              
+              {props.link10}
             </span>
           </div>
         </div>
@@ -170,7 +162,7 @@ const EventSignup = (props) => {
   )
 }
 
-EventSignup.defaultProps = {
+EventDetails.defaultProps = {
   imageSrc:
     'https://images.unsplash.com/photo-1542647528472-694d48ba60d3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyMTI1MDMxNHw&ixlib=rb-4.0.3&q=80&w=1080',
   text: 'Lorem ipsum dolorum sit amet',
@@ -200,7 +192,7 @@ EventSignup.defaultProps = {
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in ero.',
 }
 
-EventSignup.propTypes = {
+EventDetails.propTypes = {
   imageSrc: PropTypes.string,
   text: PropTypes.string,
   button: PropTypes.string,
@@ -224,4 +216,4 @@ EventSignup.propTypes = {
   address10: PropTypes.string,
   content30: PropTypes.string,
 }
-export default EventSignup
+export default EventDetails

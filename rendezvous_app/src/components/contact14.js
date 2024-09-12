@@ -1,104 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React from 'react'
+
 import PropTypes from 'prop-types'
-import BackendApi from "./fastapi";
-import { Helmet } from 'react-helmet'
 
-import './event-details.css'
+import './contact14.css'
 
-const EventSignup = (props) => {
-  const { id } = useParams();
-  const [event, setEvent] = useState(null);
-  const [hostName, setHostName] = useState('');
-  useEffect(() => {
-    // Fetch event details from the API
-    fetchEventDetails();
-  }, [id]);
-
-  const fetchEventDetails = async () => {
-    try {
-      const response = await BackendApi.get(`/events/${id}`);
-      setEvent(response.data);
-      fetchHostDetails(response.data.host_id);
-    } catch (error) {
-      console.error('Error fetching event details:', error);
-    }
-  };
-
-  const fetchHostDetails = async (hostId) => {
-    try {
-      const response = await BackendApi.get(`/accounts/${hostId}`);
-      setHostName(response.data.username);
-    } catch (error) {
-      console.error('Error fetching host details:', error);
-    }
-  };
-
-  const handleSignUp = async () => {
-    try {
-        const response = await BackendApi.post(`/events/${id}/signup`, {
-            // Add necessary headers and body
-        });
-        console.log('Response:', response.data);
-        alert('Successfully signed up for the event!');
-    } catch (error) {
-        if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            console.error('Error response:', error.response);
-            const errorMessage = error.response.data.detail;
-            alert(errorMessage);
-        } else if (error.request) {
-            // The request was made but no response was received
-            console.error('Error request:', error.request);
-            alert('Failed to sign up for the event: No response from server');
-        } else {
-            // Something happened in setting up the request that triggered an Error
-            console.error('Error message:', error.message);
-            alert('Failed to sign up for the event: ' + error.message);
-        }
-    }
-};
-
-
-  if (!event) return <div>Loading...</div>;
-
+const Contact14 = (props) => {
   return (
-    <div className="event-details-container2">
-      <Helmet>
-        <title>Event-Details - Rendezvous</title>
-        <meta property="og:title" content="Event-Details - Rendezvous" />
-      </Helmet>
-      <div className="contact-form3-contact9 thq-section-padding">
-      <div className="thq-section-max-width thq-flex-row contact-form3-max-width">
-        <img
-          alt={props.imageAlt}
-          src={props.imageSrc}
-          className="contact-form3-image1 thq-img-ratio-4-3"
-        />
-        <div className="contact-form3-content thq-flex-column">
-          <div className="contact-form3-section-title thq-card">
-            <div className="contact-form3-content1">
-              <h1 className="thq-heading-2">{event.title}</h1>
-              <span className="thq-body-small">Hosted By: {hostName}</span>
-            </div>
-          </div>
-          <div className="contact-form3-section-title1 thq-card">
-            <div className="contact-form3-content1">
-              <h2 className="thq-heading-3">{props.heading}</h2>
-              <span className="thq-body-small">{event.description}</span>
-            </div>
-          </div>
-          <button type="button" onClick={handleSignUp} className="contact-form3-button button">
-            {props.button}
-          </button>
-        </div>
-      </div>
-    </div>
-
-
-
-    <div className="contact14-contact2 thq-section-padding">
+    <div className="contact14-contact20 thq-section-padding">
       <div className="contact14-max-width thq-section-max-width">
         <div className="contact14-content">
           <svg viewBox="0 0 950.8571428571428 1024" className="contact14-icon">
@@ -107,10 +15,10 @@ const EventSignup = (props) => {
           <div className="contact14-contact-info">
             <div className="contact14-content1">
               <h3 className="contact14-text thq-heading-3">{props.heading10}</h3>
-              <p className="contact14-text1 thq-body-large">{event.date}</p>
+              <p className="contact14-text1 thq-body-large">{props.content10}</p>
             </div>
             <span className="contact14-email thq-body-small">
-              
+              {props.email10}
             </span>
           </div>
         </div>
@@ -126,7 +34,7 @@ const EventSignup = (props) => {
               <p className="contact14-text3 thq-body-large">{props.content20}</p>
             </div>
             <span className="contact14-email1 thq-body-small">
-              
+              {props.link10}
             </span>
           </div>
         </div>
@@ -166,22 +74,10 @@ const EventSignup = (props) => {
         </div>
       </div>
     </div>
-    </div>
   )
 }
 
-EventSignup.defaultProps = {
-  imageSrc:
-    'https://images.unsplash.com/photo-1542647528472-694d48ba60d3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyMTI1MDMxNHw&ixlib=rb-4.0.3&q=80&w=1080',
-  text: 'Lorem ipsum dolorum sit amet',
-  button: 'Sign Up',
-  content2: 'Event Name',
-  action: 'Submit',
-  imageAlt: 'Image1',
-  content1: 'Hosted By: USERNAME',
-  heading1: 'Event Name',
-  heading: 'Description',
-
+Contact14.defaultProps = {
   heading10: 'Date',
   content20:
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in ero.',
@@ -200,17 +96,7 @@ EventSignup.defaultProps = {
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in ero.',
 }
 
-EventSignup.propTypes = {
-  imageSrc: PropTypes.string,
-  text: PropTypes.string,
-  button: PropTypes.string,
-  content2: PropTypes.string,
-  action: PropTypes.string,
-  imageAlt: PropTypes.string,
-  content1: PropTypes.string,
-  heading1: PropTypes.string,
-  heading: PropTypes.string,
-
+Contact14.propTypes = {
   heading10: PropTypes.string,
   content20: PropTypes.string,
   phone10: PropTypes.string,
@@ -224,4 +110,5 @@ EventSignup.propTypes = {
   address10: PropTypes.string,
   content30: PropTypes.string,
 }
-export default EventSignup
+
+export default Contact14

@@ -10,6 +10,8 @@ const AuthProvider = ({ children }) => {
         const token = getToken();
         if (token) {
             setIsAuthenticated(true);
+        } else{
+            setIsAuthenticated(false);
         }
     }, []);
 

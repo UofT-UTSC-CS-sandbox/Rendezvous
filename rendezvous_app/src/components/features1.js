@@ -1,10 +1,18 @@
 import React from 'react'
 
 import PropTypes from 'prop-types'
+import { Link, useNavigate } from 'react-router-dom'
 
 import './features1.css'
 
 const Features1 = (props) => {
+  const navigate = useNavigate();
+  const handleLearnMoreClick = () => {
+    navigate('/about');
+  };
+  const handleRegisterNowClick = () => {
+    navigate('/register');
+  };
   return (
     <div className="features1-layout251 thq-section-padding">
       <div className="features1-max-width thq-section-max-width">
@@ -60,11 +68,13 @@ const Features1 = (props) => {
           </div>
         </div>
         <div className="features1-actions">
-          <button className="features1-button thq-button-filled">
-            <span className="thq-body-small">{props.mainAction}</span>
+          <button className="features1-button thq-button-filled" onClick={handleLearnMoreClick}>
+            <span className="thq-body-small">
+              {props.mainAction}</span>
           </button>
-          <button className="features1-button1 thq-button-outline">
-            <span className="thq-body-small">{props.secondaryAction}</span>
+          <button className="features1-button1 thq-button-outline" onClick={handleRegisterNowClick}>
+            <span className="thq-body-small">
+              {props.secondaryAction}</span>
           </button>
         </div>
       </div>

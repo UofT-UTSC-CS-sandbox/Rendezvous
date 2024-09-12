@@ -20,7 +20,6 @@ const Hero7 = (props) => {
                 </Link>
               </button>
             </div>
-            <div className="hero7-container1"></div>
           </div>
         </div>
       </div>

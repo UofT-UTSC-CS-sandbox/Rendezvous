@@ -1,8 +1,7 @@
 import React from "react";
-import { Nav, NavLink, Bars, NavMenu, NavBtn, NavBtnLink } from "./NavbarElements";
 import { useAuth } from '../../AuthContext';
 
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import PropTypes from 'prop-types'
 
@@ -11,20 +10,26 @@ import './navbar.css'
 
 const Navbar = (props) => {
     const { isAuthenticated, logout } = useAuth();
+    const navigate = useNavigate();
 
     const handleLogout = () => {
         logout();
+        setTimeout(() => {
+          navigate('/Home');
+      }, 1);
     };
 
     return (
         
         <header className={`nav-guest-container ${props.rootClassName} `}>
       <header data-thq="thq-navbar" className="nav-guest-navbar-interactive">
+        <a href="/home" className="nav-guest-logo">
         <img
           alt={props.logoAlt}
           src={props.logoSrc}
           className="nav-guest-image1"
         />
+        </a>
         <div data-thq="thq-navbar-nav" className="nav-guest-desktop-menu">
           <nav className="nav-guest-links">
             <Link to="/home" className="nav-guest-link1 thq-link thq-body-small">

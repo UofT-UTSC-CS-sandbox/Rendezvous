@@ -3,9 +3,15 @@ import { Helmet } from 'react-helmet'
 import BackendApi from "./fastapi";
 import './profile.css'
 import pfpplaceholder from './images/stickmanpfp.png';
+import RecentHostedEvents from "../components/RecentEvents/recenthostedevents";
+import RecentAttendedEvents from "../components/RecentEvents/recentattendedevents";
+import EventPopup from "../components/RecentEvents/eventpopup";
+import AttendedEventPopup from "../components/RecentEvents/attendedeventpopup";
 
 const Profile = () => {
+  // useState for default profile data
   const [profileData, setProfileData] = useState({
+    id: null,
     username: '',
     title: '',
     bio: '',
@@ -15,7 +21,19 @@ const Profile = () => {
     pfp: null,
   });
   const [showProfileModal, setShowProfileModal] = useState(false);
- 
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isAttendedPopupOpen, setIsAttendedPopupOpen] = useState(false);
+
+  //functions for handling opening/closing the pop-up for all hosted events
+  const handleOpenPopup = () => {
+    setIsPopupOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
+
+  // useEffect to retrieve the user's profile data from database
   useEffect(() => {
     fetchProfileData();
   }, []);
@@ -25,6 +43,7 @@ const Profile = () => {
       const response = await BackendApi.get("/profile");
       const userData = response.data;
       setProfileData({
+        id: userData.id,
         username: userData.username,
         title: userData.title || 'No Title Yet',
         bio: userData.bio || 'No Bio Yet',
@@ -38,6 +57,7 @@ const Profile = () => {
     }
   };
 
+  //function for handling saving profile changes, like changing a bio
   const handleSaveProfileChanges = async () => {
     try {
       await BackendApi.put("/profile", profileData);
@@ -47,6 +67,7 @@ const Profile = () => {
     }
   };
 
+  //function for handling switching profile pictures, more complicated because it requires going into a user's file storage
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -58,6 +79,7 @@ const Profile = () => {
     }
   };
 
+  //the displayed component's code is here
   return (
     <div className="profile-container">
       <Helmet>
@@ -68,7 +90,6 @@ const Profile = () => {
         <div className="profile-left-container">
           <div className="profile-card">
             <img
-              alt="image"
               src={profileData.pfp}
               className="profile-pic"
             />
@@ -104,23 +125,63 @@ const Profile = () => {
           </div>
           <div className="profile-all-events-container">
             <div className="profile-attended">
-              <span className="events-attended">Events Attended</span>
+              
+                <div className="attended-top">
+                  <span className="events-attended">Events Attended</span>
+                  <button className="view-events-btn" onClick={() => setIsAttendedPopupOpen(true)}>
+                  See All
+                  </button>
+                </div>
+                
+                <span className="events-listed">
+                {profileData.id && (
+                  <div>
+                    <RecentAttendedEvents accountId={profileData.id} />
+                  </div>
+                )}
+                </span>
+              
             </div>
             <div className="profile-hosted">
-              <span className="events-hosted">
-                <span>Events Hosted</span>
+            
+            <div className="attended-top">
+            <span className="events-attended">Events Hosted</span>
+                <button className="view-events-btn" onClick={handleOpenPopup}>
+                  See All
+                </button>
+              </div>
+
+              <span className="events-listed">
+                {profileData.id && (
+                  <div>
+                    <RecentHostedEvents accountId={profileData.id} />
+                  </div>
+                )}
               </span>
+              {/* The all hosted events pop-up section is here */}
             </div>
+            <EventPopup
+              isOpen={isPopupOpen}
+              onClose={handleClosePopup}
+              accountId={profileData.id}
+            />
+            {/* Popup for attended events */}
+            <AttendedEventPopup
+              isOpen={isAttendedPopupOpen}
+              onClose={() => setIsAttendedPopupOpen(false)}
+              accountId={profileData.id}
+            />
           </div>
         </div>
       </div>
 
+      {/* This section is the pop up for editing the profile page */}
       {showProfileModal && (
                 <div className="modal">
                     <div className="modal-content">
-                        <h2>Edit Profile</h2>
+                        <h2 className="thq-heading-3" >Edit Profile</h2>
                         <div className="form-group">
-                            <label htmlFor="profile-pic">Profile Picture</label>
+                            <label className="inside-text" htmlFor="profile-pic">Profile Picture</label>
                             <input
                                 type="file"
                                 accept="image/*"
@@ -128,7 +189,7 @@ const Profile = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="title">Title</label>
+                            <label className="inside-text" htmlFor="title">Title</label>
                             <input
                                 type="text"
                                 id="title"
@@ -137,7 +198,7 @@ const Profile = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="about-me">About Me</label>
+                            <label className="inside-text" htmlFor="about-me">About Me</label>
                             <textarea
                                 id="about-me"
                                 value={profileData.bio}
@@ -145,7 +206,7 @@ const Profile = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="github">Github</label>
+                            <label className="inside-text" htmlFor="github">Github</label>
                             <input
                                 type="text"
                                 id="github"
@@ -154,7 +215,7 @@ const Profile = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="twitter">Twitter</label>
+                            <label className="inside-text" htmlFor="twitter">Twitter</label>
                             <input
                                 type="text"
                                 id="twitter"
@@ -163,7 +224,7 @@ const Profile = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="instagram">Instagram</label>
+                            <label className="inside-text" htmlFor="instagram">Instagram</label>
                             <input
                                 type="text"
                                 id="instagram"
@@ -171,8 +232,10 @@ const Profile = () => {
                                 onChange={(e) => setProfileData({ ...profileData, instagram: e.target.value })}
                             />
                         </div>
+                        <div className="button-container-popup">
                         <button className="save-changes-btn" onClick={handleSaveProfileChanges}>Save Changes</button>
                         <button className="close-modal-btn" onClick={() => setShowProfileModal(false)}>Close</button>
+                        </div>
                     </div>
                 </div>
             )}

@@ -1,0 +1,88 @@
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    z-index: 1000; 
+  }
+  
+  .popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 800px;
+    position: relative;
+    overflow-y: auto;
+    max-height: 80vh;
+    z-index: 1001; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .events-list {
+    margin-top: 20px;
+  }
+  
+  .all-event-card {
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #FFFDD0; 
+    color: #000; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .event-card h3 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .event-card p {
+    margin: 10px 0;
+  }
+  
+  .event-card span {
+    display: block;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .pagination {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .pagination button {
+    background: #007bff;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .pagination .active {
+    background: #0056b3;
+  }
+  
+  .pagination button:hover {
+    background: #0056b3;
+  }
+  

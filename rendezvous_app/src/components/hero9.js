@@ -1,10 +1,21 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
+
+import { useNavigate } from 'react-router-dom';
 
 import PropTypes from 'prop-types'
 
 import './hero9.css'
 
 const Hero9 = (props) => {
+  const navigate = useNavigate();
+  const handleLearnMoreClick = () => {
+    navigate('/about');
+  };
+  const handleRegisterNowClick = () => {
+    navigate('/register');
+  };
+
   return (
     <div className="hero9-header30 thq-section-padding">
       <img
@@ -18,12 +29,12 @@ const Hero9 = (props) => {
           <h1 className="hero9-text thq-heading-1">{props.heading1}</h1>
           <p className="hero9-text1 thq-body-large">{props.slogan}</p>
           <div className="hero9-actions">
-            <button className="thq-button-filled hero9-button">
+            <button className="thq-button-filled hero9-button"onClick={handleLearnMoreClick}>
               <span className="hero9-text2 thq-body-small">
                 {props.action1}
               </span>
             </button>
-            <button className="thq-button-outline hero9-button1">
+            <button className="thq-button-outline hero9-button1" onClick={handleRegisterNowClick}>
               <span className="hero9-text3 thq-body-small">
                 {props.action2}
               </span>
